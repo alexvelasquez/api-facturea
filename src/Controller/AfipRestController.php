@@ -64,7 +64,7 @@ class AfipRestController extends RestController
         // $nroComprobante = $request->query->get('nro');
         // $ptoVenta = $request->query->get('ptoVta');
         // $tipo = $request->query->get('tipo');
-        
+
         $response = $afip->getWS()->ElectronicBilling->GetVoucherInfo(7,100,1);
         return $this->apiResponse($response,200);
     }
@@ -131,6 +131,18 @@ class AfipRestController extends RestController
     {
         $tipoDocumentos =  $this->manager()->getRepository("App:TipoDocumento")->findAll();
         return $this->apiResponse($tipoDocumentos,200);
+    }
+
+    /**
+     * @Rest\Get("/instructivo", name="instructivo", defaults={"_format":"json"})
+     * @SWG\Response(response=200,description="Devuelve el instructivo.")
+     * @SWG\Tag(name="Afip")
+     */
+    public function Instructivo()
+    {
+        $instructivo = file_get_contents($this->getParameter('public_directory').'/doc/Instructivo.pdf');
+        $response =  array('file' => "data:application/pdf;base64,".base64_encode($instructivo));
+        return $this->apiResponse($response,200);
     }
 
     /**

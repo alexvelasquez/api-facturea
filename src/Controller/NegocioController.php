@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use App\Extensions\FileUtilitiesTrait;
+
 /**
  * Class ApiController
  *
@@ -75,7 +76,7 @@ class NegocioController extends RestController
           $codigoPostal =$paramFetcher->get('codigo_postal');
           $direccion = $paramFetcher->get('direccion');
           $telefono = $paramFetcher->get('telefono');
-          $logo = !empty($paramFetcher->get('logo')) ? $paramFetcher->get('logo') : null;
+          $logo = !empty($paramFetcher->get('logo')) ? $paramFetcher->get('logo') : "";
 
           /** editrar negocio*/
           $condicionIva = $this->manager()->getRepository("App:CondicionIva")->find($condicionIva);
@@ -93,13 +94,22 @@ class NegocioController extends RestController
           $negocio->setDireccion($direccion);
           $negocio->setLocalidad($localidad);
           $negocio->setTelefono($telefono);
-          if(!empty($logo) && $this->verifyNewImage($logo)){
-            /** create hash name for image */
-            $fileName = $this->processImg($logo,$negocio->getNegocioId());//guarda la imagen en el filesystem y retorna el nombre
+          if(empty($logo) && !empty($negocio->getLogo())){
+            $this->eliminarLogo($this->getParameter('public_directory').'/uploads/'.$negocio->getLogo());
+            $negocio->setLogo(NULL);
+          }
+          elseif(!empty($logo) && !empty($negocio->getLogo())){
+            $this->eliminarLogo($this->getParameter('public_directory').'/uploads/'.$negocio->getLogo());
+            $fileName = $this->guardarLogo($logo,$negocio->getNegocioId());//guarda la imagen en el filesystem y retorna el nombre
+            $negocio->setLogo($fileName);
+          }
+          elseif(!empty($logo)){
+            $fileName = $this->guardarLogo($logo,$negocio->getNegocioId());//guarda la imagen en el filesystem y retorna el nombre
             $negocio->setLogo($fileName);
           }
           $this->manager()->flush();
-          return $this->apiResponse($negocio,200);
+          /** seteo el base64 de la imagen para manipular mejor la imagen en el front */
+          return $this->apiResponse($negocio->setLogo($logo),200);
      } catch (\Exception $e) {
        return $this->apiResponse($e,500);
      }

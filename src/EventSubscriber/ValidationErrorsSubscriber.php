@@ -71,7 +71,6 @@ class ValidationErrorsSubscriber implements EventSubscriberInterface
      */
     protected function serializeValidationErrors(array $errors)
     {
-        var_dump($errors);
         return json_encode($errors);
 
     }

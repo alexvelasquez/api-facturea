@@ -69,6 +69,7 @@ class LoginController extends FOSRestController
             $user->setUsername($username);
             $user->setPlainPassword($password);
             $user->setPassword($encoder->encodePassword($user, $password));
+            $user->setFacturaElectronica('N');
             $user->setNegocio($negocio);
             $em->persist($negocio);
             $em->persist($user);
@@ -96,7 +97,13 @@ class LoginController extends FOSRestController
     {
         $serializer = $this->get('jms_serializer');
 
-
+        /** verifco si tengo logo */
+        $logoUser = $this->getUser()->getNegocio()->getLogo();
+        $extension = explode(".", $logoUser)[1];
+        if(!empty($logoUser)){
+          $logoUser = file_get_contents($this->getParameter('public_directory').'/uploads/'.$logoUser);
+          $this->getUser()->getNegocio()->setLogo("data:image/".$extension.";base64,".base64_encode($logoUser));
+        }
         $response = array('user' => $this->getUser());
 
         return new Response($serializer->serialize($response, "json"));

@@ -19,7 +19,7 @@ class TipoComprobante
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $condicionIvaId;
+    private $tipoComprobanteId;
 
     /**
      * @var string|null
@@ -31,27 +31,34 @@ class TipoComprobante
     /**
      * @var string|null
      *
+     * @ORM\Column(name="codigo", type="string", length=1, nullable=false)
+     */
+    private $codigo;
+
+    /**
+     * @var string|null
+     *
      * @ORM\Column(name="descripcion", type="string", length=255, nullable=false)
      */
     private $descripcion;
 
 
-
-    public function __construct($afipId,$descripcion){
-      $this->afipId=$afipId;
-      $this->descripcion = $descripcion;
-    }
-
-    public function getCondicionIvaId(): ?int
+    public function getTipoCompobanteId(): ?int
     {
-        return $this->condicionIvaId;
+        return $this->tipoComprobanteId;
     }
+
+
 
     public function getAfipId(): ?string
     {
         return $this->afipId;
     }
 
+    public function getAfipFactura()
+    {
+        return str_pad($this->afipId, 3, "0", STR_PAD_LEFT);
+    }
     public function setAfipId(?string $afipId): self
     {
         $this->afipId = $afipId;
@@ -59,6 +66,18 @@ class TipoComprobante
         return $this;
     }
 
+    public function getCodigo(): ?string
+    {
+        return $this->codigo;
+    }
+
+
+    public function setCodigo(?string $codigo): self
+    {
+        $this->codigo = $codigo;
+
+        return $this;
+    }
     public function getDescripcion(): ?string
     {
         return $this->descripcion;

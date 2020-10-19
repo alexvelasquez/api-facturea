@@ -46,6 +46,12 @@ class User implements UserInterface
      */
     private $username;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="factura_electronica", type="string", length=1, nullable=true)
+     */
+    private $facturaElectronica;
 
     protected $salt;
 
@@ -160,6 +166,26 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getFacturaElectronica()
+    {
+        return $this->facturaElectronica;
+    }
+
+    /**
+     * @param mixed $username
+     * @return self
+     */
+    public function setFacturaElectronica($facturaElectronica)
+    {
+        $this->facturaElectronica = $facturaElectronica;
+
+        return $this;
+    }
+
 
     /**
      * @return mixed

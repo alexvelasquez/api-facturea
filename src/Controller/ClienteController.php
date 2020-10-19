@@ -21,7 +21,7 @@ use Swagger\Annotations as SWG;
  *
  * @Route("/api/clientes")
  */
-class ClientesController extends RestController
+class ClienteController extends RestController
 {
 
 
@@ -68,6 +68,7 @@ class ClientesController extends RestController
             !empty($request->request->get('tipo_documento')) ? $tipoDocumento = $request->request->get('tipo_documento')['tipo_documento_id']    :  $errores['tipo_documento'] = 'Este campo es obligatorio' ;
             !empty($request->request->get('documento')) ? $documento = $request->request->get('documento')    :  $errores['documento'] = 'Este campo es obligatorio' ;
             !empty($request->request->get('condicion_iva')) ? $condicionIva = $request->request->get('condicion_iva')['condicion_iva_id']    :  $errores['condicion_iva'] = 'Este campo es obligatorio' ;
+            !empty($request->request->get('telefono')) ? $telefono = $request->request->get('telefono') :  $errores['telefono'] = 'Este campo es obligatorio' ;
 
             if(!empty($errores))
             {
@@ -78,7 +79,7 @@ class ClientesController extends RestController
             $tipoDocumento = $this->manager()->getRepository("App:TipoDocumento")->find($tipoDocumento);
             $condicionIva = $this->manager()->getRepository("App:CondicionIva")->find($condicionIva);
 
-            $cliente = new Cliente($razonSocial,$email,$localidad,$direccion,$tipoDocumento,$documento,$condicionIva,$negocio);
+            $cliente = new Cliente($razonSocial,$email,$localidad,$direccion,$telefono,$tipoDocumento,$documento,$condicionIva,$negocio);
 
             $this->manager()->persist($cliente);
             $this->manager()->flush();
@@ -116,6 +117,7 @@ class ClientesController extends RestController
             !empty($request->request->get('tipo_documento')) ? $tipoDocumento = $request->request->get('tipo_documento')['tipo_documento_id']    :  $errores['tipo_documento'] = 'Este campo es obligatorio' ;
             !empty($request->request->get('documento')) ? $documento = $request->request->get('documento')    :  $errores['documento'] = 'Este campo es obligatorio' ;
             !empty($request->request->get('condicion_iva')) ? $condicionIva = $request->request->get('condicion_iva')['condicion_iva_id']    :  $errores['condicion_iva'] = 'Este campo es obligatorio' ;
+            !empty($request->request->get('telefono')) ? $telefono = $request->request->get('telefono') :  $errores['telefono'] = 'Este campo es obligatorio' ;
             if(!empty($errores))
             {
                 return $this->apiResponse($errores,400);
@@ -132,8 +134,9 @@ class ClientesController extends RestController
             $cliente->setTipoDocumento($tipoDocumento);
             $cliente->setDocumento($documento);
             $cliente->setCondicionIva($condicionIva);
+            $cliente->setTelefono($telefono);
+              //return $this->apiResponse($telefono,200);
             $cliente->setFModificacion(new \DateTime());
-
             $this->manager()->flush();
 
             return $this->apiResponse($cliente,200);

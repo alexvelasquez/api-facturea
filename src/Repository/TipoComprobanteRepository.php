@@ -16,7 +16,7 @@ class TipoComprobanteRepository extends EntityRepository
           ->from('App:TipoComprobante', 'tc');
       if(empty($condicionIva)){
         /** usuario no inscrito en la AFIP*/
-        $qb->where('tc.afipId = 0');
+        $qb->where('tc.afipId = 99');
       }
       else{
       /** '1' -> responsable inscripto */

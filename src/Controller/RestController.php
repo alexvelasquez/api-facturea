@@ -22,7 +22,7 @@ class RestController extends FOSRestController
         $context->setSerializeNull(true);
 
         $serializer = SerializerBuilder::create()->build();
-        $response = ($code == 200  || $code == 201) ? ['code'=>$code,'data'=>$data] : ['code'=>$code,'errors'=>$data] ;
+        $response = ($code == 200  || $code == 201) ? ['code'=>$code,'data'=>$data] : ['code'=>$code,'message'=>$data] ;
         $json = $serializer->serialize($response, 'json', $context);
         return new Response($json, $code, array(
             'Content-Type' => 'application/json'

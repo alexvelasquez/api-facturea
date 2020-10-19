@@ -68,7 +68,6 @@ class ProductosController extends RestController
             !empty($request->request->get('categoria'))  ? $categoria  = $request->request->get('categoria')['categoria_id']    :  $errores['categoria'] = 'Este campo es obligatorio';
             !empty($request->request->get('marca'))  ? $marca  = $request->request->get('marca')['marca_id']    :  $errores['marca'] = 'Este campo es obligatorio';
             !empty($request->request->get('precio_compra')) ? $precioCompra = $request->request->get('precio_compra')    :  $errores['precio_compra'] = 'Este campo es obligatorio' ;
-            !empty($request->request->get('iva'))  ? $iva  = $request->request->get('iva')     :  $errores['iva'] = 'Este campo es obligatorio';
             !empty($request->request->get('aumento')) ? $aumento = $request->request->get('aumento')    :  $errores['aumento'] = 'Este campo es obligatorio' ;
             if(!empty($errores))
             {
@@ -76,7 +75,7 @@ class ProductosController extends RestController
             }
             $categoria = $this->manager()->getRepository("App:Categoria")->find($categoria);
             $marca = $this->manager()->getRepository("App:Marca")->find($marca);
-            $producto = new Producto($descripcion,$codigo,$stock,$categoria,$marca,$precioCompra,$aumento,$iva,$negocio);
+            $producto = new Producto($descripcion,$codigo,$stock,$categoria,$marca,$precioCompra,$aumento,$negocio);
 
             $this->manager()->persist($producto);
             $this->manager()->flush();
@@ -113,7 +112,6 @@ class ProductosController extends RestController
             !empty($request->request->get('categoria'))  ? $categoria  = $request->request->get('categoria')['categoria_id']    :  $errores['categoria'] = 'Este campo es obligatorio';
             !empty($request->request->get('marca'))  ? $marca  = $request->request->get('marca')['marca_id']   :  $errores['marca'] = 'Este campo es obligatorio';
             !empty($request->request->get('precio_compra')) ? $precioCompra = $request->request->get('precio_compra')    :  $errores['precio_compra'] = 'Este campo es obligatorio' ;
-            !empty($request->request->get('iva'))  ? $iva  = $request->request->get('iva')     :  $errores['iva'] = 'Este campo es obligatorio';
             !empty($request->request->get('aumento')) ? $aumento = $request->request->get('aumento')    :  $errores['aumento'] = 'Este campo es obligatorio' ;
             if(!empty($errores))
             {
@@ -128,7 +126,6 @@ class ProductosController extends RestController
             $producto->setCategoria($categoria);
             $producto->setMarca($marca);
             $producto->setPrecioCompra($precioCompra);
-            $producto->setIva($iva);
             $producto->setAumento($aumento);
             $producto->setFModificacion(new \DateTime());
 

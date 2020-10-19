@@ -56,12 +56,6 @@ class Producto
      */
     private $aumento;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="iva", type="integer", nullable=true)
-     */
-    private $iva;
 
     /**
      * @var \DateTime|null
@@ -115,7 +109,7 @@ class Producto
     private $negocio;
 
 
-    public function __construct($descripcion, $codigo, $stock, $categoria,$marca, $precioCompra, $aumento,$iva, $negocio ){
+    public function __construct($descripcion, $codigo, $stock, $categoria,$marca, $precioCompra, $aumento,$negocio ){
         $this->descripcion = $descripcion;
         $this->codigo = $codigo;
         $this->stock = $stock;
@@ -124,7 +118,7 @@ class Producto
         $this->precioCompra = $precioCompra;
         $this->aumento = $aumento;
         $this->negocio = $negocio;
-        $this->iva = $iva;
+
         $this->fCreacion = new \DateTime();
         $this->fModificacion = new \DateTime();
     }
@@ -194,17 +188,6 @@ class Producto
         return $this;
     }
 
-    public function getIva(): ?int
-    {
-        return $this->iva;
-    }
-
-    public function setIva(int $iva): self
-    {
-        $this->iva = $iva;
-
-        return $this;
-    }
 
     public function getFModificacion(): ?\DateTimeInterface
     {

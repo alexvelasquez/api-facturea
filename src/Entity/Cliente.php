@@ -31,21 +31,28 @@ class Cliente
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255, nullable=false)
+     * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     private $email;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="direccion", type="string", length=255, nullable=false)
+     * @ORM\Column(name="direccion", type="string", length=255, nullable=true)
      */
     private $direccion;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="telefono",  type="string", length=255, nullable=true)
+     */
+    private $telefono;
+
+    /**
      * @var int
      *
-     * @ORM\Column(name="documento", type="integer", nullable=false)
+     * @ORM\Column(name="documento",  type="string", length=255, nullable=true)
      */
     private $documento;
 
@@ -111,7 +118,7 @@ class Cliente
      */
     private $negocio;
 
-    public function __construct($razonSocial, $email, $localidad, $direccion, $tipoDoc, $documento,$condIva, $negocio ){
+    public function __construct($razonSocial, $email, $localidad, $direccion, $telefono,$tipoDoc, $documento,$condIva, $negocio ){
         $this->razonSocial = $razonSocial;
         $this->email = $email;
         $this->localidad = $localidad;
@@ -120,6 +127,7 @@ class Cliente
         $this->documento = $documento;
         $this->condicionIva = $condIva;
         $this->negocio = $negocio;
+        $this->telefono = $telefono;
         $this->fCreacion = new \DateTime();
         $this->fModificacion = new \DateTime();
     }
@@ -141,12 +149,12 @@ class Cliente
         return $this;
     }
 
-    public function getDocumento(): ?int
+    public function getDocumento(): ?string
     {
         return $this->documento;
     }
 
-    public function setDocumento(int $documento): self
+    public function setDocumento(string $documento): self
     {
         $this->documento = $documento;
 
@@ -238,6 +246,17 @@ class Cliente
         return $this;
     }
 
+    public function getTelefono(): ?string
+    {
+        return $this->telefono;
+    }
+
+    public function setTelefono(?string $telefono): self
+    {
+        $this->telefono = $telefono;
+
+        return $this;
+    }
 
     public function getNegocio(): ?Negocio
     {

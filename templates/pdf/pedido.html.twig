@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Pedido</title>
+    </head>
+    <style>
+    table {
+      font-family: Helvetica, Sans-Serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    /* TABLE HEADER */
+    .table-header td, .table-header th {
+      border: 1px solid #dddddd;
+      padding: 8px;
+    }
+
+    .table-header tr th{
+      border: 1px solid #dddddd;
+      width:5%;
+      font-size: 25px
+      border: 1px solid;
+      text-align:center;
+    }
+
+    /* TABLE PRODUCTOS */
+    .table-productos .cabecera {
+      background-color: #dddddd;
+    }
+    .table-productos td, .table-productos th {
+        padding: 8px;
+        border: 1px solid #dddddd;
+    }
+    .table-productos td{
+      text-align: center;
+    }
+
+
+    </style>
+    <body>
+    {# HEADER TITLE : ORIGINAL O DUPLICADO #}
+    <table class="table-header">
+      <tr>
+        <th>PEDIDO: {{preventa.getCliente.getRazonSocial}}</th>
+      </tr>
+    </table>
+
+    {# LISTADO PRODUCTOS #}
+    {# INFO DATOS EMISOR #}
+    {#  background-color: #dddddd; #}
+    <table class="table-productos" style="margin-top:2px">
+      <tr class="cabecera">
+        <th style="font-size:10px;">Código</th>
+        <th style="font-size:10px;">Producto</th>
+        <th style="font-size:10px;">Cantidad</th>
+      </tr>
+      {% for producto in productos %}
+      <tr>
+        <td style="font-size:10px;">{{producto.producto.codigo ?? '-'}}</td>
+        <td style="font-size:10px;">{{producto.producto.descripcion}}</td>
+        <td style="font-size:10px;">{{producto.cantidad | number_format(2, ',', '.') }}</td>
+      </tr>
+    {% endfor %}
+    </table>
+
+    </body>
+</html>
