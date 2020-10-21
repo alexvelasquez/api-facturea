@@ -88,7 +88,7 @@ class PreventaController extends RestController
             $pedidos = $this->manager()->getRepository("App:Preventa")->preventasTipo($negocio,$tipoPreventa,$estado);
 
             /** obtengo las cantidades  */
-            $dataTotales = $this->manager()->getRepository("App:Preventa")->totalesPorEstado();
+            $dataTotales = $this->manager()->getRepository("App:Preventa")->totalesPorEstado($negocio);
             $totales['total'] = 0;
             $totales['pendiente'] = 0;
             $totales['realizado'] = 0;

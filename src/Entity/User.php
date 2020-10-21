@@ -35,6 +35,13 @@ class User implements UserInterface
     /**
      * @var string
      *
+     * @ORM\Column(name="last_name", type="string", length=150, nullable=false)
+     */
+    private $lastname;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="email", type="string", length=255, nullable=false)
      */
     private $email;
@@ -94,7 +101,13 @@ class User implements UserInterface
     private $negocio;
 
 
-    public function __construct(){
+    public function __construct($name,$lastname,$username,$email,$negocio){
+      $this->name = $name;
+      $this->lastname = $lastname;
+      $this->username = $username;
+      $this->email = $email;
+      $this->facturaElectronica = 'N';
+      $this->negocio = $negocio;
     }
 
     /**
@@ -120,6 +133,25 @@ class User implements UserInterface
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * @param mixed $name
+     * @return self
+     */
+    public function setLastName($lastname)
+    {
+        $this->lastName = $lastname;
 
         return $this;
     }

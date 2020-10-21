@@ -6,7 +6,9 @@
 parameters:
      public_directory: '%kernel.project_dir%\public'
      estado_cancelado: 4
-     estado_pagado: 1
+     estado_pagado: 3
+     estado_pendiente: 1
+     estado_pendientePago: 5
      tipo_comprobante_recibo: 99
      responsable_inscripto: 1
 

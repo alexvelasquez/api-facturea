@@ -24,9 +24,30 @@ class Notificacion
     /**
      * @var string
      *
+     * @ORM\Column(name="titulo", type="string", length=255, nullable=false)
+     */
+    private $titulo;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="mensaje", type="text", nullable=false)
      */
     private $mensaje;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="redireccion", type="string", length=255, nullable=true)
+     */
+    private $url;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="leido", type="string", length=1, nullable=false)
+     */
+    private $leido;
 
     /**
      * @var \User
@@ -38,6 +59,16 @@ class Notificacion
      */
     private $user;
 
+    public function __construct($titulo,$mensaje,$user,$url)
+    {
+        $this->titulo = $titulo;
+        $this->mensaje = $mensaje;
+        $this->user = $user;
+        $this->url = $url;
+        $this->leido = 'N';
+    }
+
+
     public function getNotificacionId(): ?int
     {
         return $this->notificacionId;
@@ -47,5 +78,15 @@ class Notificacion
     {
         return $this->mensaje;
     }
+
+    public function getLeido(): ?string
+    {
+        return $this->leido;
+    }
+    public function setLeido($value): ?string
+    {
+        return $this->leido=$value;
+    }
+
 
 }

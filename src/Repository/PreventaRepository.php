@@ -34,7 +34,7 @@ class PreventaRepository extends EntityRepository
     }
 
     /** Retorno los tipos de comprobantes dada la condicion frente al IVA del cliente */
-    public function totalesPorEstado()
+    public function totalesPorEstado($negocio)
     {
 
       $em = $this->getEntityManager();
@@ -47,8 +47,10 @@ class PreventaRepository extends EntityRepository
           ->innerJoin('App:Estado', 'e','WITH', 'e = cp.estado')
           ->where('cp.vigente = :vigente')
           ->andWhere('p.tipoPreventa = :tipoPreventa')
+          ->andWhere('c.negocio = :negocio')
           ->groupBy('e.descripcion')
           ->setParameter(':vigente','S')
+          ->setParameter(':negocio',$negocio)
           ->setParameter(':tipoPreventa',2);
       return $qb->getQuery()->getResult();
     }

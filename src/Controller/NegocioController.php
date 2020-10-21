@@ -54,7 +54,6 @@ class NegocioController extends RestController
     * @Rest\RequestParam(name="iibb",nullable=true)
     * @Rest\RequestParam(name="email",nullable=false)
     * @Rest\RequestParam(name="localidad",nullable=false)
-    * @Rest\RequestParam(name="codigo_postal",nullable=false)
     * @Rest\RequestParam(name="direccion",nullable=false)
     * @Rest\RequestParam(name="telefono",nullable=false)
     * @Rest\RequestParam(name="logo",nullable=true)
@@ -66,20 +65,19 @@ class NegocioController extends RestController
    {
      try {
           $razonSocial =$paramFetcher->get('razon_social');
-          $condicionIva = !empty($paramFetcher->get('condicion_iva')) ? $paramFetcher->get('condicion_iva')['condicion_iva_id'] : null ;
+          $condicionIva = !empty($paramFetcher->get('condicion_iva')['condicion_iva_id']) ? $paramFetcher->get('condicion_iva')['condicion_iva_id'] : null;
           $cuitCuil =$paramFetcher->get('cuit_cuil');
-          $inicioActividad = !empty($paramFetcher->get('inicio_actividad')) ? new \DateTime($paramFetcher->get('inicio_actividad')) : null ;
+          $inicioActividad = !empty($paramFetcher->get('inicio_actividad')) ? new \DateTime($paramFetcher->get('inicio_actividad')) : null;
           $iibb = !empty($paramFetcher->get('iibb')) ? $paramFetcher->get('iibb') : null ;
           $email = $paramFetcher->get('email');
           $puntoVta = !empty($paramFetcher->get('punto_vta')) ? intval($paramFetcher->get('punto_vta')) : null;
           $localidad =$paramFetcher->get('localidad')['localidad_id'];
-          $codigoPostal =$paramFetcher->get('codigo_postal');
           $direccion = $paramFetcher->get('direccion');
           $telefono = $paramFetcher->get('telefono');
-          $logo = !empty($paramFetcher->get('logo')) ? $paramFetcher->get('logo') : "";
+          $logo = !empty($paramFetcher->get('logo')) ? $paramFetcher->get('logo') : null;
 
           /** editrar negocio*/
-          $condicionIva = $this->manager()->getRepository("App:CondicionIva")->find($condicionIva);
+          $condicionIva = $condicionIva ? $this->manager()->getRepository("App:CondicionIva")->find($condicionIva) : null;
           $localidad = $this->manager()->getRepository("App:Localidad")->find($localidad);
           $negocio->setRazonSocial($razonSocial);
           $negocio->setDireccion($direccion);
@@ -90,10 +88,12 @@ class NegocioController extends RestController
           $negocio->setIibb($iibb);
           $negocio->setPuntoVta($puntoVta);
           $negocio->setInicioActividad($inicioActividad);
-          $negocio->setCodigoPostal($codigoPostal);
           $negocio->setDireccion($direccion);
           $negocio->setLocalidad($localidad);
           $negocio->setTelefono($telefono);
+          $negocio->setLogo($logo);
+
+
           if(empty($logo) && !empty($negocio->getLogo())){
             $this->eliminarLogo($this->getParameter('public_directory').'/uploads/'.$negocio->getLogo());
             $negocio->setLogo(NULL);
@@ -108,8 +108,9 @@ class NegocioController extends RestController
             $negocio->setLogo($fileName);
           }
           $this->manager()->flush();
+
           /** seteo el base64 de la imagen para manipular mejor la imagen en el front */
-          return $this->apiResponse($negocio->setLogo($logo),200);
+          return $this->apiResponse($negocio,200);
      } catch (\Exception $e) {
        return $this->apiResponse($e,500);
      }

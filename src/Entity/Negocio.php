@@ -38,7 +38,7 @@ class Negocio
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255, nullable=false)
+     * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     private $email;
 
@@ -70,12 +70,6 @@ class Negocio
      */
     private $inicioActividad;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="codigo_postal", type="string", length=255, nullable=true)
-     */
-    private $codigoPostal;
 
     /**
      * @var int|null
@@ -163,18 +157,6 @@ class Negocio
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    public function getCodigoPostal(): ?string
-    {
-        return $this->codigoPostal;
-    }
-
-    public function setCodigoPostal(string $codigoPostal): self
-    {
-        $this->codigoPostal = $codigoPostal;
 
         return $this;
     }

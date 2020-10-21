@@ -5,6 +5,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
+
 class ComprobantePreventaRepository extends EntityRepository
 {
     /** Retorno los tipos de comprobantes dada la condicion frente al IVA del cliente */
@@ -39,6 +40,27 @@ class ComprobantePreventaRepository extends EntityRepository
       return $qb->getQuery()->getResult();
     }
 
+    public function  ventasTotales($negocio,$estados){
+      $em = $this->getEntityManager();
+      $pagado = $estados['pagado'];
+      $pendientePago =  $estados['pendientePago'];
+      $qb = $em->createQueryBuilder();
+      $qb->select('e.estadoId as estado','SUM(pp.subtotal) as total', 'MONTH(p.fecha) as mes')
+          ->from('App:Preventa','p')
+          ->innerJoin('App:Cliente','c','WITH','c = p.cliente')
+          ->innerJoin('App:ComprobantePreventa', 'cp','WITH', 'p = cp.preventa')
+          ->innerJoin('App:ProductoPreventa', 'pp','WITH', 'p = pp.preventa')
+          ->innerJoin('App:Estado', 'e','WITH', 'cp.estado = e')
+          ->where('cp.vigente = :vigente')
+          ->andWhere('c.negocio = :negocio')
+          ->andWhere('cp.estado = :pagado OR cp.estado = :pendientePago')
+          ->groupBy('e.estadoId','mes')
+          ->setParameter(':vigente','S')
+          ->setParameter(':pagado',$pagado)
+          ->setParameter(':pendientePago',$pendientePago)
+          ->setParameter(':negocio',$negocio);
+      return $qb->getQuery()->getResult();
+    }
 
 
 }
