@@ -25,6 +25,8 @@ class ComprobantePreventaController extends RestController
 
     /**
      * @Rest\Get("/negocio/{negocio}/ventas", name="ventas_totales", defaults={"_format":"json"})
+     * @Rest\QueryParam(name="fechaDesde",nullable=false)
+     * @Rest\QueryParam(name="fechaHasta",nullable=false)
      * @SWG\Response(response=200,description="Ventas correctamente")
      * @SWG\Response(response=400,description="Ha ocurrido un error en los parametros")}
      * @SWG\Response(response=500,description="Ha ocurrido un error al crear la marca")
@@ -32,37 +34,81 @@ class ComprobantePreventaController extends RestController
 
      * @SWG\Tag(name="Comprobante Preventa")
      */
-    public function ventasComprobantePreventa(Negocio $negocio)
+    public function ventasComprobantePreventa(ParamFetcher $paramFetcher, Negocio $negocio)
     {
         try {
-            /** actualizo el stock */
-            $estados=['pagado'=>$this->getParameter('estado_pagado'),
-                      'pendientePago'=>$this->getParameter('estado_pendientePago')];
-            $totales = $this->manager()->getRepository("App:ComprobantePreventa")->ventasTotales($negocio,$estados);
-            $response['total']=0;
+            $pendiente =$this->getParameter('estado_pendiente');
+            $pagado =$this->getParameter('estado_pagado');
+            $pendientePago =$this->getParameter('estado_pendiente_pago');
+            $realizado =$this->getParameter('estado_realizado');
+            $tipoPreventa = $this->getParameter('tipo_preventa_pedido');
+            $tipoRecibo =$this->getParameter('tipo_comprobante_recibo');
 
-            $response[$this->getParameter('estado_pagado')]=0;
-            $response[$this->getParameter('estado_pendientePago')]=0;
-
-            $valoresPredefinidos = array_fill(0, (int) date('n'), 0);
-            $graficos[$this->getParameter('estado_pagado')]=$valoresPredefinidos;
-            $graficos[$this->getParameter('estado_pendientePago')]=$valoresPredefinidos;
-            $graficos['total']=$valoresPredefinidos;
-
-            foreach ($totales as $value) {
-                $mes = (int) $value['mes'];
+            $periodo = ['fechaDesde' => $paramFetcher->get('fechaDesde').' 00:00:00',
+                        'fechaHasta' => $paramFetcher->get('fechaHasta').' 23:59:59'];
+            $estados= [ (string) $pendiente => 'pendiente',
+                        (string) $pagado => 'pagado',
+                        (string) $pendientePago => 'pendientePago',
+                        (string) $realizado => 'realizado'
+                      ];
+            $recaudacionesTotales = $this->manager()->getRepository("App:ComprobantePreventa")->recaudacionTotal($negocio,$pagado,$pendientePago,$periodo);
+            $comprobantesTotales = $this->manager()->getRepository("App:ComprobantePreventa")->comprobantesTotales($negocio,$pagado,$periodo);
+            $pedidosTotales = $this->manager()->getRepository("App:ComprobantePreventa")->pedidosTotales($negocio,$pagado,$realizado,$pendiente,$tipoPreventa,$periodo);
+            //dd($pedidosTotales);
+             //dd($comprobantesTotales);
+            //$comprobantes totales
+            $data['totales']['recaudacion']=[];
+            $data['totales']['comprobantes']=[];
+            $data['totales']['pedidos']=[];
+            //foreach totales
+            foreach ($recaudacionesTotales as $value) {
+                $indiceEstado = $estados[$value['estado'] ];//string del estado;
+                $indiceFecha = $value['fecha'];
                 $total = $value['total'];
-                $estado = $value['estado'];
-                /** datos para el grafico */
-                $graficos[$estado][$mes-1] = round($total,2);
-                $graficos['total'][$mes-1] = round($graficos['total'][$mes-1]+$total,2);
-                /** totales */
-                $response[$estado] = round($response[$estado]+$total,2);
-                $response['total'] = round($response['total']+$total,2);
+                $montosEstados = $data['totales']['recaudacion'][$indiceEstado] ?? 0;
+                $data['totales']['recaudacion'][$indiceEstado] = round($montosEstados + $total,2);
+
+                $montoTotal = $data['totales']['recaudacion']['total'] ?? 0;
+                $data['totales']['recaudacion']['total'] = round( $montoTotal + $total,2);
+
+                if($value['estado'] == $pagado){
+                  $monto = $data['graficos'][$indiceFecha] ?? 0;
+                  $data['graficos'][$indiceFecha] = round($monto + $total,2);
+                }
+            }
+            /** foreach de comprobantes **/
+            foreach ($comprobantesTotales as $value) {
+                $indiceComprobante = ($value['tipoComprobante'] == $tipoRecibo) ? 'recibo' : 'factura';//string del estado;
+
+                $cantidad = $value['cantidad'];
+                $cantidadComprobantes = $data['totales']['comprobantes'][$indiceComprobante] ?? 0;
+                $data['totales']['comprobantes'][$indiceComprobante] = $cantidadComprobantes + $cantidad;
+
+                $cantidadTotal = $data['totales']['comprobantes']['total'] ?? 0;
+                $data['totales']['comprobantes']['total'] = $cantidadTotal + $cantidad;
+
             }
 
-            $data['graficos']=$graficos;
-            $data['totales']=$response;
+            /** foreach de pedidos **/
+            foreach ($pedidosTotales as $value) {
+                $indicePedido = $estados[$value['estado']] == 'pagado' ? 'realizado' : $estados[$value['estado']];//string del estado;
+                $cantidad = $value['cantidad'];
+
+                $cantidadComprobantes = $data['totales']['pedidos'][$indicePedido] ?? 0;
+                $data['totales']['pedidos'][$indicePedido] = $cantidadComprobantes + $cantidad;
+
+                $cantidadTotal = $data['totales']['pedidos']['total'] ?? 0;
+                $data['totales']['pedidos']['total'] = $cantidadTotal + $cantidad;
+            }
+
+            /** formato para datos del grafico */
+            if(!empty($data['graficos'])){
+              $datasets = array_values($data['graficos']);
+              $labels = array_keys($data['graficos']);
+              $data['graficos']=[];/** borro los datos anteriores */
+              $data['graficos']['datasets'] = $datasets;
+              $data['graficos']['labels'] = $labels;
+            }
             return $this->apiResponse($data,200);
         } catch (Exception $e) {
             return $this->apiResponse($e->getMessage(),500);

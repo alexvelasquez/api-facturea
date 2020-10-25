@@ -241,9 +241,9 @@ class Producto
         return $this->negocio;
     }
 
-    public function getPrecioPublicado(): self
+    public function getPrecioPublicado(): ?string
     {
-        return number_format($this->precio + ($this->precio * ($this->aumento/100)), 2, '.', ',');
+        return number_format($this->precioCompra + ($this->precioCompra * ($this->aumento/100)), 2, '.', ',');
     }
 
 
