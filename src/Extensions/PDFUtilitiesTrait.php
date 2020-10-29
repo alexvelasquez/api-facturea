@@ -16,8 +16,10 @@ trait PDFUtilitiesTrait
 
   private function generarPdf($url,$datos){
     /* pdf/factura.html.twig**/
+    //dd($datos['cliente']->getLocalidad()->getProvincia()->getDescripcion());
+    //dd($datos['CbteTipo']->getDescripcion());
+    // dd($datos['cliente']->getNegocio()->getCondicionIva().getDescripcion());
     $html = $this->renderView($url,$datos);
-
     $options = new Options();
     $options->set('isRemoteEnabled', TRUE);
     $options->setIsHtml5ParserEnabled(true);

@@ -36,7 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
 
     public function getCondicionVentaId(): ?int
     {
-        return $this->tipoDocumentoId;
+        return $this->condicionVentaId;
     }
 
 

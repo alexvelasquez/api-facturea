@@ -88,7 +88,7 @@ class Negocio
     /**
      * @var \Localidad
      *
-     * @ORM\ManyToOne(targetEntity="Localidad")
+     * @ORM\ManyToOne(targetEntity="Localidad", fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="localidad_id", referencedColumnName="localidad_id")
      * })
@@ -98,7 +98,7 @@ class Negocio
     /**
      * @var \CondicionIva
      *
-     * @ORM\ManyToOne(targetEntity="CondicionIva")
+     * @ORM\ManyToOne(targetEntity="CondicionIva", fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="condicion_iva_id", referencedColumnName="condicion_iva_id")
      * })

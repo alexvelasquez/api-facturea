@@ -41,6 +41,21 @@ class ClienteController extends RestController
         }
     }
 
+
+    /**
+     * @Rest\Get("/cuentaCorriente/{cliente}", name="cuenta_corriente", defaults={"_format":"json"})
+     * @SWG\Response(response=200,description="Actualiza el cliente de un negocio.")
+     * @SWG\Response(response=400,description="Error en los parametros")
+     * @SWG\Response(response=500,description="Error en el servidor")
+     * @SWG\Tag(name="Cliente")
+     */
+     public function clienteCuentaCorriente(Cliente $cliente)
+     {
+       $estadoPendientePago = $this->getParameter('estado_pendiente_pago');
+       $response = $this->manager()->getRepository("App:Cliente")->cuentaCorriente($cliente,$cliente->getNegocio(),$estadoPendientePago);
+       return $this->apiResponse($response,200);
+     }
+
     /**
      * @Rest\Post("/negocio/{negocio}/nuevo", name="nuevo_cliente", defaults={"_format":"json"})
      * @SWG\Response(response=201,description="Producto creado correctamente")
@@ -206,5 +221,7 @@ class ClienteController extends RestController
           return $this->apiResponse($ex->getMessage(),500);
         }
     }
+
+
 
 }

@@ -6,6 +6,7 @@ use App\Entity\Cliente;
 use App\Entity\Negocio;
 use App\Entity\Preventa;
 use App\Entity\ComprobantePreventa;
+use App\Entity\CuentaCorriente;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
@@ -79,7 +80,7 @@ class ComprobanteController extends RestController
           /** begin transaccion */
           $this->manager()->getConnection()->beginTransaction();
 
-          $esRecibo = $this->getParameter('tipo_comprobante_recibo') == $paramFetcher->get('comprobante');
+          $esRecibo = $this->getParameter('tipo_comprobante_recibo_afip') == $paramFetcher->get('comprobante');
           /**Creo el comprobante */
           $tipoComprobante = $this->manager()->getRepository("App:TipoComprobante")->findOneBy(['afipId'=>$paramFetcher->get('comprobante')]);
           /** verifico si es recibo y obtengo el numero del recibo**/
@@ -91,7 +92,7 @@ class ComprobanteController extends RestController
 
           /** Preventa*/
           $fechaEmision = $paramFetcher->get('fecha_emision');
-          $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente')['cliente_id']);
+          $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente'));
           $tipoPreventa = $this->manager()->getRepository("App:TipoPreventa")->find(1);//Comprobante
           $preventa = new Preventa($cliente,$tipoPreventa,$fechaEmision);
           $this->manager()->persist($preventa);
@@ -101,8 +102,14 @@ class ComprobanteController extends RestController
           $this->manager()->getRepository("App:ProductoPreventa")->generarProductosPreventas($productos,$preventa);
 
           /** Comprobante Preventa*/
-          $estadoPagado =  $this->manager()->getRepository("App:Estado")->find($this->getParameter('estado_pagado'));//pagado
           $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));
+          $estadoComprobante = $this->getParameter('estado_pagado');
+          if($condicionVenta->getCondicionVentaId() == $this->getParameter('cuenta_corriente') && $esRecibo){ //verico si es un recibo y se aplica a cuenta corriente..
+            $estadoComprobante = $this->getParameter('estado_pendiente_pago');
+            $cuentaCorriente = new CuentaCorriente($preventa);
+            $this->manager()->persist($cuentaCorriente);
+          }
+          $estadoPagado =  $this->manager()->getRepository("App:Estado")->find($estadoComprobante);//pagado o pendiente_pago
           $comprobantePreventa = new ComprobantePreventa($preventa,$estadoPagado,'S',$tipoComprobante,$condicionVenta,$nroComprobante,$ptoVta);
           $this->manager()->persist($comprobantePreventa);
 

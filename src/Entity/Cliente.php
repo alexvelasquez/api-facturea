@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Cliente
  *
  * @ORM\Table(name="cliente", indexes={@ORM\Index(name="negocio_id", columns={"negocio_id"}), @ORM\Index(name="localidad_id", columns={"localidad_id"}),  @ORM\Index(name="tipo_documento_id", columns={"tipo_documento_id"}), @ORM\Index(name="condicion_iva_id", columns={"condicion_iva_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ClienteRepository");
  */
 class Cliente
 {
@@ -80,7 +80,7 @@ class Cliente
     /**
      * @var \Localidad
      *
-     * @ORM\ManyToOne(targetEntity="Localidad")
+     * @ORM\ManyToOne(targetEntity="Localidad", fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="localidad_id", referencedColumnName="localidad_id")
      * })
@@ -111,7 +111,7 @@ class Cliente
     /**
      * @var \Negocio
      *
-     * @ORM\ManyToOne(targetEntity="Negocio")
+     * @ORM\ManyToOne(targetEntity="Negocio", fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id")
      * })

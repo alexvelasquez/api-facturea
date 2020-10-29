@@ -66,7 +66,7 @@ class ComprobantePreventaRepository extends EntityRepository
     public function  comprobantesTotales($negocio,$pagado,$periodo){
       $em = $this->getEntityManager();
       $qb = $em->createQueryBuilder();
-      $qb->select("tc.tipoComprobanteId as tipoComprobante, COUNT(tc.tipoComprobanteId) as cantidad")
+      $qb->select("tc.afipId as tipoComprobante, COUNT(tc.tipoComprobanteId) as cantidad")
           ->from('App:Preventa','p')
           ->innerJoin('App:Cliente','c','WITH','c = p.cliente')
           ->innerJoin('App:ComprobantePreventa', 'cp','WITH', 'p = cp.preventa')

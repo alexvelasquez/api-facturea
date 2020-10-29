@@ -5,12 +5,13 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
      public_directory: '%kernel.project_dir%\public'
+     cuenta_corriente: 4
      estado_cancelado: 4
      estado_pagado: 3
      estado_pendiente: 1
      estado_realizado: 2
      estado_pendiente_pago: 5
-     tipo_comprobante_recibo: 13
+     tipo_comprobante_recibo_afip: 99
      tipo_preventa_pedido: 2
      responsable_inscripto: 1
 

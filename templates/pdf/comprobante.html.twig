@@ -171,7 +171,7 @@
 
           <span style="font-size:13px; font-weight: bold;">Razón Social:</span><span style="font-size:12px"> {{cliente.getNegocio().getRazonSocial()}} </span><br><br>
           <span style="font-size:13px; font-weight: bold;">Domicilio Comercial:</span><span style="font-size:12px"> {{cliente.getNegocio().getDireccion() }} - {{cliente.getNegocio().getLocalidad().getDescripcion()|upper}} , {{cliente.getNegocio().getLocalidad().getProvincia().getDescripcion()}}</span><br>
-          <span style="font-size:13px; font-weight: bold;">Condición IVA:</span><span style="font-size:12px; font-weight: bold">  {{cliente.getNegocio().getCondicionIva().getDescripcion()}}</span>
+          <span style="font-size:13px; font-weight: bold;">Condición IVA:</span><span style="font-size:12px; font-weight: bold">  {{cliente.getNegocio().getCondicionIva() ? cliente.getNegocio().getCondicionIva().getDescripcion() : '--'}}</span>
         </td>
         <td class="factura">
         {% if not recibo %}
@@ -199,7 +199,7 @@
     <table class="table-receptor" style="margin-top:2px">
       <tr>
         <td class="documentos">
-          <span style="font-size:13px; font-weight: bold;">{{cliente.getTipoDocumento().getDescripcion | upper}}:</span><span style="font-size:12px"> {{cliente.getDocumento}}</span><br><br>
+          <span style="font-size:13px; font-weight: bold;">{{cliente.getTipoDocumento().getDescripcion() | upper}}:</span><span style="font-size:12px"> {{cliente.getDocumento}}</span><br><br>
           <span style="font-size:13px; font-weight: bold;">Condición IVA:</span><span style="font-size:12px;"> {{cliente.getCondicionIva().getDescripcion()}}</span><br>
           <span style="font-size:13px; font-weight: bold;">Condición de venta:</span><span style="font-size:12px"> {{CondVta.getDescripcion()}}</span><br>
         </td>

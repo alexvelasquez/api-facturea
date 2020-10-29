@@ -24,7 +24,7 @@ class Preventa
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="fecha", type="date", nullable=false)
+     * @ORM\Column(name="fecha", type="datetimetz", nullable=false)
      */
     private $fecha;
 

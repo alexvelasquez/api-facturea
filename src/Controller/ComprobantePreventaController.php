@@ -42,7 +42,7 @@ class ComprobantePreventaController extends RestController
             $pendientePago =$this->getParameter('estado_pendiente_pago');
             $realizado =$this->getParameter('estado_realizado');
             $tipoPreventa = $this->getParameter('tipo_preventa_pedido');
-            $tipoRecibo =$this->getParameter('tipo_comprobante_recibo');
+            $tipoRecibo =$this->getParameter('tipo_comprobante_recibo_afip');
 
             $periodo = ['fechaDesde' => $paramFetcher->get('fechaDesde').' 00:00:00',
                         'fechaHasta' => $paramFetcher->get('fechaHasta').' 23:59:59'];

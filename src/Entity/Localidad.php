@@ -31,7 +31,7 @@ class Localidad
     /**
      * @var \Provincia
      *
-     * @ORM\ManyToOne(targetEntity="Provincia")
+     * @ORM\ManyToOne(targetEntity="Provincia", fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="provincia_id", referencedColumnName="provincia_id", nullable=false)
      * })
