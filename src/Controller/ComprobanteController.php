@@ -118,14 +118,14 @@ class ComprobanteController extends RestController
           $tipoDoc = $cliente->getTipoDocumento()->getAfipId();
           $nroDoc = ($tipoDoc != 6) ? $cliente->getDocumento() : 0;
 
-          /** datos opcionales para las facturas con concepto servicios o produtos y servicios*/
-          $fechaDesde =   !empty($paramFetcher->get('fecha_desde')) ?  intval(date('Ymd',strtotime($paramFetcher->get('fecha_desde')))) : NULL;
-          $fechaHasta =   !empty($paramFetcher->get('fecha_hasta')) ?  intval(date('Ymd',strtotime($paramFetcher->get('fecha_hasta')))) : NULL;
-          $fechaVto   =   !empty($paramFetcher->get('fecha_vto')) ?  intval(date('Ymd',strtotime($paramFetcher->get('fecha_vto')))) : NULL;
 
 
             /** si el usuario esta habilitado para factura electronica y es un comprobante valido**/
           if(!empty($this->getUser()->getFacturaElectronica()) && !$esRecibo){
+              /** datos opcionales para las facturas con concepto servicios o produtos y servicios*/
+              $fechaDesde =   !empty($paramFetcher->get('fecha_desde')) ?  intval(date('Ymd',strtotime($paramFetcher->get('fecha_desde')))) : NULL;
+              $fechaHasta =   !empty($paramFetcher->get('fecha_hasta')) ?  intval(date('Ymd',strtotime($paramFetcher->get('fecha_hasta')))) : NULL;
+              $fechaVto   =   !empty($paramFetcher->get('fecha_vto')) ?  intval(date('Ymd',strtotime($paramFetcher->get('fecha_vto')))) : NULL;
               /** Creo el comprobante en la AFIP*/
               $data = array(
                 'CantReg' 	=> 1,  // Cantidad de comprobantes a registrar
@@ -185,6 +185,12 @@ class ComprobanteController extends RestController
               }
           }
           else{
+            $fechaDesde= !empty($paramFetcher->get('fecha_desde')) ?  date('d/m/Y',strtotime($paramFetcher->get('fecha_desde'))) : NULL;
+            $fechaHasta= !empty($paramFetcher->get('fecha_hasta')) ?  date('d/m/Y',strtotime($paramFetcher->get('fecha_hasta'))) : NULL;
+            $fechaVto= !empty($paramFetcher->get('fecha_vto')) ? date('d/m/Y',strtotime($paramFetcher->get('fecha_vto'))) : NULL;
+            $data['FchServDesde']=  $fechaDesde; // (Opcional) Fecha de inicio del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
+            $data['FchServHasta']= $fechaHasta;// (Opcional) Fecha de fin del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
+            $data['FchVtoPago']= $fechaVto;
             $data['cliente'] = $cliente;
             $data['productos'] = $productos;
             $data['CbteTipo'] = $tipoComprobante;
