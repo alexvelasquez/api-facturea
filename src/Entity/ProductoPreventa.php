@@ -199,12 +199,12 @@ class ProductoPreventa
 
         return $this;
     }
-    public function getAliCuota(): ?AliCuota
+    public function getTipoAliCuota(): ?TipoAliCuota
     {
         return $this->alicuota;
     }
 
-    public function setAliCuota(?AliCuota $alicuota): self
+    public function setTipoAliCuota(?TipoAliCuota $tipoAlicuota): self
     {
         $this->alicuota = $alicuota;
 

@@ -4,29 +4,26 @@
 namespace App\Entity;
 class ResponseCuentaCorriente
 {
-   public $cuentaCorrienteId;
+
    public $preventa;
    public $fechaPreventa;
+   public $montoCompra;
    public $montoDebido;
-   public $montoPagado;
    public $fUltimoMovimiento;
 
     /** constructor userSeguimiento excel */
     public function __construct(
-      $cuentaCorrienteId,
       $preventa,
       $fechaPreventa,
       $montoDebido,
-      $montoPagado,
+      $montoCompra,
       $fUltimoMovimiento
-
     )
     {
-      $this->cuentaCorrienteId = $cuentaCorrienteId;
       $this->preventa=$preventa;
       $this->fechaPreventa=$fechaPreventa;
-      $this->montoDebido=$montoDebido;
-      $this->montoPagado=$montoPagado;
+      $this->montoDebido=(double)$montoDebido;
+      $this->montoCompra=$montoCompra;
       $this->fUltimoMovimiento=$fUltimoMovimiento;
     }
 

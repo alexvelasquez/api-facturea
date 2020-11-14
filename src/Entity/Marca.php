@@ -40,6 +40,8 @@ class Marca
 
 
 
+
+
     public function __construct($descripcion,$negocio)
     {
         $this->descripcion = $descripcion;
@@ -73,7 +75,6 @@ class Marca
 
         return $this;
     }
-
 
 
 }

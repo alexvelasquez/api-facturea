@@ -118,6 +118,8 @@ class Cliente
      */
     private $negocio;
 
+    private $montoDebido;// se agrega un campo para totalizar lo debido
+
     public function __construct($razonSocial, $email, $localidad, $direccion, $telefono,$tipoDoc, $documento,$condIva, $negocio ){
         $this->razonSocial = $razonSocial;
         $this->email = $email;
@@ -270,5 +272,15 @@ class Cliente
         return $this;
     }
 
+    public function getMontoDebido(): ?float
+    {
+        return $this->montoDebido;
+    }
 
+    public function setMontoDebido(?float $montoDebido): self
+    {
+        $this->montoDebido = $montoDebido;
+
+        return $this;
+    }
 }

@@ -83,7 +83,7 @@ class Producto
      *
      * @ORM\ManyToOne(targetEntity="Marca")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="marca_id", referencedColumnName="marca_id", nullable=false)
+     *   @ORM\JoinColumn(name="marca_id", referencedColumnName="marca_id" ,nullable=true, onDelete="SET NULL")
      * })
      */
     private $marca;
@@ -93,7 +93,7 @@ class Producto
      *
      * @ORM\ManyToOne(targetEntity="Categoria")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="categoria_id", referencedColumnName="categoria_id", nullable=false)
+     *   @ORM\JoinColumn(name="categoria_id", referencedColumnName="categoria_id", nullable=true, onDelete="SET NULL")
      * })
      */
     private $categoria;
@@ -163,6 +163,7 @@ class Producto
 
         return $this;
     }
+
 
     public function getPrecioCompra(): ?float
     {

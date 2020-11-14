@@ -29,6 +29,13 @@ class Preventa
     private $fecha;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="monto_debido", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $montoDebido;
+
+    /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="f_creacion", type="datetimetz", nullable=false)
@@ -73,6 +80,7 @@ class Preventa
     {
         $this->cliente = $cliente;
         $this->tipoPreventa = $tipoPreventa;
+        $this->montoDebido = 0;
         $this->fecha = new \DateTime($fecha);
         $this->fCreacion = new \DateTime();
         $this->fModificacion = new \DateTime();
@@ -90,6 +98,19 @@ class Preventa
     public function setFecha(\DateTimeInterface $fecha): self
     {
         $this->fecha = $fecha;
+        return $this;
+    }
+
+
+    public function getMontoDebido(): ?float
+    {
+        return $this->montoDebido;
+    }
+
+    public function setMontoDebido(float $montoDebido): self
+    {
+        $this->montoDebido = $montoDebido;
+
         return $this;
     }
 

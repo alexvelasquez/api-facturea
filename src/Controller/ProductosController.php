@@ -232,14 +232,14 @@ class ProductosController extends RestController
 
           }
           $indice = 2;
-          $productos = $this->manager()->getRepository("App:Producto")->findBy(['negocio'=>$negocio]);
+          $productos = $this->manager()->getRepository("App:Producto")->findBy(['negocio'=>$negocio,'fHasta'=>NULL]);
           foreach ($productos as $value) {
             $sheet->setCellValue('A'.$indice, strtoupper($value->getDescripcion()));
             $sheet->setCellValue('B'.$indice, $value->getCodigo());
             $sheet->setCellValue('C'.$indice, $value->getStock());
             $sheet->setCellValue('D'.$indice, $value->getPrecioPublicado());
-            $sheet->setCellValue('E'.$indice, strtoupper($value->getMarca()->getDescripcion()));
-            $sheet->setCellValue('F'.$indice, strtoupper($value->getCategoria()->getDescripcion()));
+            $sheet->setCellValue('E'.$indice, strtoupper($value->getMarca()->getMarcaId()));
+            $sheet->setCellValue('F'.$indice, strtoupper($value->getCategoria()->getCategoriaId()));
             $this->setHeight($sheet,$indice,20);
             $indice ++;
           }
@@ -248,9 +248,9 @@ class ProductosController extends RestController
           $writer->save("php://output");
           $xlsData = ob_get_contents();
           ob_end_clean();
-            $response =  array(
-                'file' => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
-            );
+          $response =  array(
+              'file' => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+          );
           return $this->apiResponse($response,200);
 
         } catch (Exception $e) {
@@ -410,8 +410,13 @@ class ProductosController extends RestController
              if($errores>0){
                throw new Exception('Los campos en el archivo no pueden estar vacios.');
              }
-             $marca = $this->manager()->getRepository("App:Marca")->find($sheet->getCell('F'.$indice)->getValue());
-             $categoria = $this->manager()->getRepository("App:Categoria")->find($sheet->getCell('G'.$indice)->getValue());
+             $nroMarca = $sheet->getCell('F'.$indice)->getValue();
+             $nroCategoria = $sheet->getCell('G'.$indice)->getValue();
+             $marca = $this->manager()->getRepository("App:Marca")->findOneBy(['marcaId'=>$nroMarca,'negocio'=>$negocio]);
+             $categoria = $this->manager()->getRepository("App:Categoria")->findOneBy(['categoriaId'=>$nroCategoria,'negocio'=>$negocio]);
+             if(empty($marca) || empty($categoria)){
+               throw new Exception('Los codigos de marca o categoria no son correctos');
+             }
              $producto = new Producto($descripcion, $codigo, $stock, $categoria,$marca, $precioCompra, $aumento,$negocio );
              $this->manager()->persist($producto);
           }
@@ -421,7 +426,7 @@ class ProductosController extends RestController
           $this->manager()->flush();
           return $this->apiResponse('Productos cargados correctamente',204);
         } catch (Exception $e) {
-            return $this->apiResponse($response,500);
+            return $this->apiResponse($e->getMessage(),500);
         }
     }
 }

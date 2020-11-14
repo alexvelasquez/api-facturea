@@ -100,4 +100,30 @@ class ProductoPreventaRepository extends EntityRepository
       return $producto;
     }
 
+    public function productosPreventaTipoProd($tipo,$estadoPendientePago,$esCategoria = null){
+      // dd($tipo);
+      $em = $this->getEntityManager();
+      // throw new Exception($estadoPreventa->getDescripcion());
+      $qb = $em->createQueryBuilder();
+      $qb->select('pp')
+          ->from('App:Preventa','p')
+          ->innerJoin('App:Cliente','c','WITH','c = p.cliente')
+          ->innerJoin('App:ComprobantePreventa', 'cp','WITH', 'p = cp.preventa')
+          ->innerJoin('App:ProductoPreventa', 'pp','WITH', 'p = pp.preventa')
+          ->innerJoin('App:Producto', 'prod','WITH', 'prod = pp.producto')
+          ->where('c.negocio = :negocio')
+          ->andWhere('cp.estado = :estado');
+          if(!empty($esCategoria)){
+            $qb->andWhere('prod.categoria = :tipo');
+          }
+          else{
+            $qb->andWhere('prod.marca = :tipo');
+          }
+        $qb->setParameter(':estado',$estadoPendientePago)
+        ->setParameter(':tipo',$tipo)
+        ->setParameter(':negocio',$tipo->getNegocio());
+      return $qb->getQuery()->getArrayResult();
+    }
+
+
 }

@@ -104,17 +104,16 @@ class ComprobanteController extends RestController
           /** Comprobante Preventa*/
           $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));
           $estadoComprobante = $this->getParameter('estado_pagado');
+          $importes = $paramFetcher->get('importes');
           if($condicionVenta->getCondicionVentaId() == $this->getParameter('cuenta_corriente') && $esRecibo){ //verico si es un recibo y se aplica a cuenta corriente..
             $estadoComprobante = $this->getParameter('estado_pendiente_pago');
-            $cuentaCorriente = new CuentaCorriente($preventa);
-            $this->manager()->persist($cuentaCorriente);
+            $preventa->setMontoDebido($importes['total']);
           }
           $estadoPagado =  $this->manager()->getRepository("App:Estado")->find($estadoComprobante);//pagado o pendiente_pago
           $comprobantePreventa = new ComprobantePreventa($preventa,$estadoPagado,'S',$tipoComprobante,$condicionVenta,$nroComprobante,$ptoVta);
           $this->manager()->persist($comprobantePreventa);
 
           /** obtengo datos para comprobante AFIP*/
-          $importes = $paramFetcher->get('importes');
           $concepto = $paramFetcher->get('concepto');
           $tipoDoc = $cliente->getTipoDocumento()->getAfipId();
           $nroDoc = ($tipoDoc != 6) ? $cliente->getDocumento() : 0;

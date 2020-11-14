@@ -16,9 +16,6 @@ trait PDFUtilitiesTrait
 
   private function generarPdf($url,$datos){
     /* pdf/factura.html.twig**/
-    //dd($datos['cliente']->getLocalidad()->getProvincia()->getDescripcion());
-    //dd($datos['CbteTipo']->getDescripcion());
-    // dd($datos['cliente']->getNegocio()->getCondicionIva().getDescripcion());
     $html = $this->renderView($url,$datos);
     $options = new Options();
     $options->set('isRemoteEnabled', TRUE);
@@ -27,8 +24,9 @@ trait PDFUtilitiesTrait
     $dompdf->loadHtml($html);
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
+    // Output the generated PDF to Browser
+    //$dompdf->stream();
     return base64_encode($dompdf->output());
-
   }
 
 }

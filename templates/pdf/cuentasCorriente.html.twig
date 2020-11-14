@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Cuenta Corriente</title>
+    </head>
+    <style>
+    table {
+      font-family: Helvetica, Sans-Serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    /* TABLE HEADER */
+    .table-header td, .table-header th {
+      border: 1px solid #dddddd;
+      padding: 8px;
+    }
+
+    .table-header tr th{
+      border: 1px solid #dddddd;
+      width:5%;
+      font-size: 15px
+      border: 1px solid;
+      text-align:center;
+    }
+
+    /* TABLE PRODUCTOS */
+    .table-productos .cabecera {
+      background-color: #dddddd;
+    }
+    .table-productos td, .table-productos th {
+        padding: 8px;
+        border: 1px solid #dddddd;
+    }
+    .table-productos td{
+      text-align: center;
+    }
+
+
+    </style>
+    <body>
+    {# HEADER TITLE : ORIGINAL O DUPLICADO #}
+    <table class="table-header">
+      <tr>
+        <th>Cuenta Corriente: {{total.cliente}}
+        </th>
+        <th>Monto Debido: ${{total.deuda | number_format(2, ',', '.')}}</th>
+      </tr>
+    </table>
+
+    {# LISTADO PRODUCTOS #}
+    {# INFO DATOS EMISOR #}
+    {#  background-color: #dddddd; #}
+    <table class="table-productos" style="margin-top:2px">
+      <tr class="cabecera">
+        <th style="font-size:10px;">Fecha de Compra</th>
+        <th style="font-size:10px;">Monto de Compra</th>
+        <th style="font-size:10px;">Monto debído</th>
+        <th style="font-size:10px;">Estado</th>
+      </tr>
+      {% for cuenta in cuentas %}
+      <tr>
+        <td style="font-size:10px;">{{cuenta.fechaPreventa | date('d/m/Y')}}</td>
+        <td style="font-size:10px;">{{cuenta.montoCompra | number_format(2, ',', '.')}}</td>
+        <td style="font-size:10px;">{{cuenta.montoDebido | number_format(2, ',', '.') }}</td>
+        <td style="font-size:10px;">{{cuenta.montoDebido > 0 ? 'PENDIENTE DE PAGO' : 'PAGADO'}}</td>
+      </tr>
+    {% endfor %}
+    </table>
+
+    </body>
+</html>

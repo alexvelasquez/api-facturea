@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Ticket</title>
+    </head>
+    <style>
+    table {
+      font-family: Helvetica, Sans-Serif;
+      border-collapse: collapse;
+      width: 80%;
+      padding-left: 20%
+    }
+
+    /* TABLE PRODUCTOS */
+    .table-ticket .cabecera {
+      background-color: #dddddd;
+    }
+    .table-ticket td, .table-ticket th {
+        padding:8px;
+        border-left: 1px solid #dddddd;
+        border-right: 1px solid #dddddd;
+    }
+    .table-ticket td{
+      text-align: left;
+    }
+
+
+    </style>
+    <body>
+    {% set logo_pagado = path_public ~'/build/pagado.jpg' %}
+    {# LISTADO PRODUCTOS #}
+    {# INFO DATOS EMISOR #}
+    {#  background-color: #dddddd; #}
+    <table class="table-ticket" style="margin-top:2px">
+      <tr class="cabecera">
+        <th style="font-size:16px; color:grey">COMPROBANTE DE PAGO</th>
+      </tr>
+      <tr>
+        <td style="font-size:15px;">COMERCIO: {{negocio}}</td>
+      </tr>
+      <tr>
+        <td style="font-size:15px;">FECHA Y HORA: {{fecha}}</td>
+      </tr>
+      <tr>
+        <td style="font-size:15px;">NRO TRANSACCION: {{transaccion}}</td>
+      </tr>
+      <tr>
+        <td style="font-size:15px;">NRO DE CLIENTE: {{cliente}}</td>
+      </tr>
+      <tr>
+        <td style="font-size:15px;">VENTA: CONTADO</td>
+      </tr>
+      <tr>
+        <td style="font-size:15px;">MONTO PAGADO: ${{monto}}</td>
+      </tr>
+      <tr>
+        <td style="font-size:15px;text-align:center; padding-top:5%;">
+        <img width="" src="{{logo_pagado}}" >
+        </td>
+      </tr>
+      <tr>
+        <td style="font-size:15px; text-align:center; padding-top:5%;  border-bottom: 1px solid #dddddd;">ESTE RECIBO ES CONSTANCIA DE PAGO</td>
+      </tr>
+    </table>
+
+    </body>
+</html>
