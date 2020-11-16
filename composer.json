@@ -69,6 +69,7 @@
             "chmod -R 777 public/",
             "chmod -R 777 config/",
             "mkdir -p config/jwt",
+            "rm var/cache var/log",
             "openssl genrsa -out config/jwt/private.pem 4096",
             "openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem"
         ],
