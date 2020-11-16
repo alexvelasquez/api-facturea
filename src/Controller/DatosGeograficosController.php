@@ -32,7 +32,7 @@ class DatosGeograficosController extends RestController
      */
     public function provincias()
     {
-        $dataProvincias =  $this->manager()->getRepository("App:Provincia")->findAll();
+        $dataProvincias =  $this->manager()->getRepository("App:Provincia")->findBy([],['geoId'=>'ASC']);
         return $this->apiResponse($dataProvincias,200);
     }
 
@@ -44,7 +44,7 @@ class DatosGeograficosController extends RestController
      */
     public function localidades(Provincia $provincia)
     {
-        $dataLocalidades = $this->manager()->getRepository("App:Localidad")->findBy(['provincia'=>$provincia]);
+        $dataLocalidades = $this->manager()->getRepository("App:Localidad")->findBy(['provincia'=>$provincia],['descripcion'=>'ASC']);
         return $this->apiResponse($dataLocalidades,200);
     }
 
@@ -61,11 +61,11 @@ class DatosGeograficosController extends RestController
           $provincia = new Provincia($value->id,$value->nombre);
           $this->manager()->persist($provincia);
       }
-
+      $this->manager()->flush();
       $localidades = $service->get('/localidades?campos=nombre,provincia&max=5000')->data->localidades;//['provincias'];
       foreach ($localidades as $value) {
           $provinciaLocalidad = $value->provincia->id;
-          $provincia = $this->manager()->getRepository("App:Provincia")->findBy(['geoId'=>$provinciaLocalidad]);
+          $provincia = $this->manager()->getRepository("App:Provincia")->findOneBy(['geoId'=>$provinciaLocalidad]);
           $localidad = new Localidad($value->nombre,$provincia);
           $this->manager()->persist($localidad);
       }
