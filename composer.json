@@ -66,6 +66,7 @@
         },
         "post-install-cmd": [
             "@auto-scripts",
+            "chmod -R 777 src/Afip_res/",
             "chmod -R 777 public/",
             "chmod -R 777 config/",
             "mkdir -p config/jwt",
