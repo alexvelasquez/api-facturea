@@ -32,7 +32,7 @@ class DatosGeograficosController extends RestController
      */
     public function provincias()
     {
-        $dataProvincias =  $this->manager()->getRepository("App:Provincia")->findAll();
+        $dataProvincias =  $this->manager()->getRepository("App:Provincia")->findBy([],['geoId'=>'ASC']);
         return $this->apiResponse($dataProvincias,200);
     }
 
@@ -44,7 +44,7 @@ class DatosGeograficosController extends RestController
      */
     public function localidades(Provincia $provincia)
     {
-        $dataLocalidades = $this->manager()->getRepository("App:Localidad")->findBy(['provincia'=>$provincia]);
+        $dataLocalidades = $this->manager()->getRepository("App:Localidad")->findBy(['provincia'=>$provincia],['descripcion'=>'ASC']);
         return $this->apiResponse($dataLocalidades,200);
     }
 
