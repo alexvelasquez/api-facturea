@@ -45,21 +45,21 @@ class Negocio
     /**
      * @var int|null
      *
-     * @ORM\Column(name="telefono", type="integer", nullable=true)
+     * @ORM\Column(name="telefono", type="string", nullable=true)
      */
     private $telefono;
 
     /**
      * @var int|null
      *
-     * @ORM\Column(name="cuit_cuil", type="integer", nullable=true)
+     * @ORM\Column(name="cuit_cuil", type="string", length=255, nullable=true)
      */
     private $cuitCuil;
 
     /**
      * @var int|null
      *
-     * @ORM\Column(name="iibb", type="integer", nullable=true)
+     * @ORM\Column(name="iibb", type="string", length=255, nullable=true)
      */
     private $iibb;
 
