@@ -69,6 +69,7 @@
             "chmod -R 777 src/Afip_res/",
             "chmod -R 777 public/",
             "chmod -R 777 config/",
+            "mkdir -p var",
             "mkdir -p config/jwt",
             "openssl genrsa -out config/jwt/private.pem 4096",
             "openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem"
