@@ -105,7 +105,7 @@ class AfipRestController extends RestController
      */
     public function tiposConceptos(AfipController $afip)
     {
-        $response = $afip->getWS()->ElectronicBilling->GetConceptTypes();
+        $response =$this->manager()->getRepository("App:TipoConcepto")->findAll();
         return $this->apiResponse($response,200);
     }
 

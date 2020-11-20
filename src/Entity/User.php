@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as Serializer;
 /**
  * User
  *
- * @ORM\Table(name="usuario", indexes={@ORM\Index(name="negocio_id", columns={"negocio_id"})});
+ * @ORM\Table(name="usuario");
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository");
  * @ORM\HasLifecycleCallbacks()
  */
