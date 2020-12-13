@@ -20,7 +20,7 @@ class TipoComprobanteRepository extends EntityRepository
       }
       else{
       /** '1' -> responsable inscripto */
-        ($condicionIva == 1 ) ? $qb->where('tc.afipId BETWEEN 1 AND 9') : $qb->where('tc.afipId > 9');
+        ($condicionIva == 1 ) ? $qb->where('tc.afipId BETWEEN 1 AND 9') : $qb->where('tc.afipId BETWEEN 11 AND 15');
       }
       return $qb->getQuery()->getArrayResult();
     }

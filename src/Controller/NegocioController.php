@@ -57,6 +57,7 @@ class NegocioController extends RestController
     * @Rest\RequestParam(name="direccion",nullable=false)
     * @Rest\RequestParam(name="telefono",nullable=false)
     * @Rest\RequestParam(name="logo",nullable=true)
+    * @Rest\RequestParam(name="nombre_fantasia",nullable=true)
     * @SWG\Response(response=200,description="Devuelve todas las marcas de un negocio.")
     * @SWG\Response(response=500,description="Hubo un problema para recuperar las marcas de un negocio.")
     * @SWG\Tag(name="Negocio")
@@ -65,6 +66,7 @@ class NegocioController extends RestController
    {
      try {
           $razonSocial =$paramFetcher->get('razon_social');
+          $nombreFantasia = $paramFetcher->get('nombre_fantasia');
           $condicionIva = !empty($paramFetcher->get('condicion_iva')['condicion_iva_id']) ? $paramFetcher->get('condicion_iva')['condicion_iva_id'] : null;
           $cuitCuil =$paramFetcher->get('cuit_cuil');
           $inicioActividad = !empty($paramFetcher->get('inicio_actividad')) ? new \DateTime($paramFetcher->get('inicio_actividad')) : null;
@@ -80,6 +82,7 @@ class NegocioController extends RestController
           $condicionIva = $condicionIva ? $this->manager()->getRepository("App:CondicionIva")->find($condicionIva) : null;
           $localidad = $this->manager()->getRepository("App:Localidad")->find($localidad);
           $negocio->setRazonSocial($razonSocial);
+          $negocio->setNombreFantasia($nombreFantasia);
           $negocio->setDireccion($direccion);
           $negocio->setEmail($email);
           $negocio->setTelefono($telefono);
@@ -93,17 +96,16 @@ class NegocioController extends RestController
           $negocio->setTelefono($telefono);
           $negocio->setLogo($logo);
 
-
-          if(empty($logo) && !empty($negocio->getLogo())){
+          if(empty($logo) && !empty($negocio->getLogo())){ // si tengo imagen previo y envio un null
             $this->eliminarLogo($this->getParameter('public_directory').'/uploads/'.$negocio->getLogo());
             $negocio->setLogo(NULL);
           }
-          elseif(!empty($logo) && !empty($negocio->getLogo())){
+          elseif(!empty($logo) && !empty($negocio->getLogo())){ // si tengo imagne previa y envio una imagen
             $this->eliminarLogo($this->getParameter('public_directory').'/uploads/'.$negocio->getLogo());
             $fileName = $this->guardarLogo($logo,$negocio->getNegocioId());//guarda la imagen en el filesystem y retorna el nombre
             $negocio->setLogo($fileName);
           }
-          elseif(!empty($logo)){
+          elseif(!empty($logo)){ // si es la primera vez que cargo la imagen
             $fileName = $this->guardarLogo($logo,$negocio->getNegocioId());//guarda la imagen en el filesystem y retorna el nombre
             $negocio->setLogo($fileName);
           }

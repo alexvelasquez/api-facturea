@@ -24,6 +24,13 @@ class Marca
     /**
      * @var string
      *
+     * @ORM\Column(name="codigo", type="integer", nullable=false)
+     */
+    private $codigo;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="descripcion", type="string", length=255, nullable=false)
      */
     private $descripcion;
@@ -39,12 +46,9 @@ class Marca
     private $negocio;
 
 
-
-
-
-    public function __construct($descripcion,$negocio)
-    {
+    public function __construct($descripcion,$codigo,$negocio){
         $this->descripcion = $descripcion;
+        $this->codigo = $codigo;
         $this->negocio = $negocio;
     }
 

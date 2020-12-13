@@ -44,6 +44,7 @@ class CategoriasController extends RestController
 
     /**
      * @Rest\Post("/negocio/{negocio}/nuevo", name="nueva_categoria", defaults={"_format":"json"})
+     * @Rest\RequestParam(name="descripcion",nullable=false)
      * @SWG\Response(response=201,description="Producto creado correctamente")
      * @SWG\Response(response=400,description="Ha ocurrido un error en los parametros")}
      * @SWG\Response(response=500,description="Ha ocurrido un error al crear la categoria")
@@ -54,18 +55,11 @@ class CategoriasController extends RestController
     public function nuevaCategoria(Request $request, Negocio $negocio)
     {
         try {
-            $errores = [];
-            !empty($request->request->get('descripcion')) ? $descripcion = $request->request->get('descripcion')    :  $errores['descripcion'] = 'Este campo es obligatorio';
-
-            if(!empty($errores))
-            {
-                return $this->apiResponse($errores,400);
-            }
-            $categoria = new Categoria($descripcion,$negocio);
-
+            $descripcion = $request->request->get('descripcion');
+            $codigo = count($this->manager()->getRepository("App:Categoria")->findBy(['negocio'=>$negocio]))+ 1;
+            $categoria = new Categoria($descripcion,$codigo,$negocio);
             $this->manager()->persist($categoria);
             $this->manager()->flush();
-
             return $this->apiResponse($categoria,201);
         } catch (Exception $e) {
             return $this->apiResponse($ex->getMessage(),500);
@@ -92,7 +86,6 @@ class CategoriasController extends RestController
             }
             /** Actualizo los campos del producto */
             $categoria->setDescripcion($descripcion);
-
             $this->manager()->flush();
 
             return $this->apiResponse($categoria,200);
@@ -139,7 +132,7 @@ class CategoriasController extends RestController
           $this->manager()->getConnection()->beginTransaction();
           foreach ($categorias as $m)
           {
-              $categoria = $this->manager()->getRepository("App:Categoria")->find($m->marca_id);
+              $categoria = $this->manager()->getRepository("App:Categoria")->find($m->categoria_id);
               $this->manager()->remove($categoria);
               $this->manager()->flush();
           }

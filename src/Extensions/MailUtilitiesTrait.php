@@ -27,11 +27,12 @@ trait MailUtilitiesTrait
       // Create the attachment with your data
       $attachment = new \Swift_Attachment($pdf, 'comprobante_pago.pdf', 'application/pdf');
     }
+
     $message = (new \Swift_Message($dataMail['title']))
          ->setFrom('info.facturea@gmail.com')//se harcodea por defecto el de facturea
          ->setTo($dataMail['destination']);
     if($textPlain){
-      $message->setBody($dataMail['data'],'text/plain');
+      $message->setBody($dataMail['body'],'text/html');
     }
     else{
       $message->setBody($this->renderView($dataMail['url'],$dataMail['data']),'text/html');

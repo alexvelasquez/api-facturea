@@ -199,7 +199,7 @@
     <table class="table-receptor" style="margin-top:2px">
       <tr>
         <td class="documentos">
-          <span style="font-size:13px; font-weight: bold;">{{cliente.getTipoDocumento().getDescripcion() | upper}}:</span><span style="font-size:12px"> {{cliente.getDocumento}}</span><br><br>
+          <span style="font-size:13px; font-weight: bold;">{{cliente.getDocumento() == 0 ? 'Documento' : cliente.getTipoDocumento().getDescripcion()}}:</span><span style="font-size:12px"> {{cliente.getDocumento}}</span><br><br>
           <span style="font-size:13px; font-weight: bold;">Condición IVA:</span><span style="font-size:12px;"> {{cliente.getCondicionIva().getDescripcion()}}</span><br>
           <span style="font-size:13px; font-weight: bold;">Condición de venta:</span><span style="font-size:12px"> {{CondVta.getDescripcion()}}</span><br>
         </td>

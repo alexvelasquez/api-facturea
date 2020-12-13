@@ -31,6 +31,13 @@ class Negocio
     /**
      * @var string|null
      *
+     * @ORM\Column(name="nombre_fantasia", type="string", length=255, nullable=true)
+     */
+    private $nombreFantasia;
+
+    /**
+     * @var string|null
+     *
      * @ORM\Column(name="direccion", type="string", length=255, nullable=true)
      */
     private $direccion;
@@ -105,7 +112,23 @@ class Negocio
      */
     private $condicionIva;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="factura_electronica", type="string", length=1, nullable=true)
+     */
+    private $facturaElectronica;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="pedido_producto", type="string", length=1, nullable=true)
+     */
+    private $pedidoProducto;
+
     public function __construct(){
+      $this->facturaElectronica = 'N';
+      $this->pedidoProducto = 'N';
     }
 
     public function getNegocioId(): ?int
@@ -125,6 +148,17 @@ class Negocio
         return $this;
     }
 
+    public function getNombreFantasia(): ?string
+    {
+        return $this->$nombreFantasia;
+    }
+
+    public function setNombreFantasia(?string $nombreFantasia): self
+    {
+        $this->nombreFantasia = $nombreFantasia;
+
+        return $this;
+    }
     public function getDireccion(): ?string
     {
         return $this->direccion;
@@ -249,4 +283,30 @@ class Negocio
 
         return $this;
     }
+
+
+    public function getFacturaElectronica()
+    {
+        return $this->facturaElectronica;
+    }
+
+    public function setFacturaElectronica($facturaElectronica)
+    {
+        $this->facturaElectronica = $facturaElectronica;
+
+        return $this;
+    }
+
+    public function getPedidoProductos()
+    {
+        return $this->pedidoProducto;
+    }
+
+    public function setPedidoProductos($pedidoProducto)
+    {
+        $this->pedidoProducto = $pedidoProducto;
+
+        return $this;
+    }
+
 }

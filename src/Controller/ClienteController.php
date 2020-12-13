@@ -127,25 +127,24 @@ class ClienteController extends RestController
          $movimiento->setMontoPagado($monto);
          $this->manager()->persist($movimiento);
          $this->manager()->flush();
-         //$this->manager->flush();
          $dataTicket = ['negocio'=>$cliente->getNegocio()->getRazonSocial(),
                         'cliente'=>$cliente->getClienteId(),
                         'transaccion'=>$movimiento->getMovimientoId(),
                         'fecha'=>date('d/m/Y H:m:s'),
                         'monto'=>$monto];
-        if(!empty($cliente->getEmail())){ //si el cliente tiene mail, se manda por esa via
-          $dataFile = ['url'=>'pdf/ticket.html.twig','data'=>$dataTicket]; //ticket a adjuntar en el mail
-          $dataEmail = ['title'=>'Pago efectuado',
-                       'destination' => $cliente->getEmail(),
-                       'data'=>$cliente->getNegocio()->getRazonSocial().' le informa que el día de la fecha se efectuo el pago correctamente'
-                     ];
-          $this->sendMail($mailer,$dataEmail,$dataFile);
-          $response = ['data'=>'Ticket enviado por mail.'];
-        }
-        else{
+        // if(!empty($cliente->getEmail())){ //si el cliente tiene mail, se manda por esa via
+        //   $dataFile = ['url'=>'pdf/ticket.html.twig','data'=>$dataTicket]; //ticket a adjuntar en el mail
+        //   $dataEmail = ['title'=>'Pago efectuado',
+        //                'destination' => $cliente->getEmail(),
+        //                'data'=>$cliente->getNegocio()->getRazonSocial().' le informa que el día de la fecha se efectuo el pago correctamente'
+        //              ];
+        //   $this->sendMail($mailer,$dataEmail,$dataFile);
+        //   $response = ['data'=>'Ticket enviado por mail.'];
+        // }
+        // else{
           $pdf = $this->generarPdf('pdf/ticket.html.twig',$dataTicket);
           $response = ['file' => "data:application/pdf;base64,".$pdf];
-        }
+        //}
 
         return $this->apiResponse($response,200);
        }

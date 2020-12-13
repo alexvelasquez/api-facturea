@@ -40,14 +40,14 @@ class ClienteRepository extends EntityRepository
           ->where('c.negocio = :negocio')
           ->andWhere('cp.estado = :estado')
           ->andWhere('p.cliente = :cliente')
-          ->groupBy('p.preventaId')
+          ->groupBy('p.preventaId, p.fecha, p.montoDebido')
           ->orderBy('p.fecha','DESC')
           ->setParameter(':cliente',$cliente)
           ->setParameter(':estado',$estadoPendientePago)
           ->setParameter(':negocio',$cliente->getNegocio());
           $response['cuentas'] = $qb->getQuery()->getArrayResult();
 
-          $qbtotal->select('c.razonSocial as cliente, MAX(m.fCreacion) fUltimoMovimiento,SUM(p.montoDebido) as deuda')
+          $qbtotal->select('c.clienteId, c.razonSocial as cliente, MAX(m.fCreacion) fUltimoMovimiento,SUM(p.montoDebido) as deuda')
               ->from('App:Preventa','p')
               ->innerJoin('App:Cliente','c','WITH','c = p.cliente')
               ->innerJoin('App:ComprobantePreventa', 'cp','WITH', 'p = cp.preventa')
@@ -59,7 +59,6 @@ class ClienteRepository extends EntityRepository
               ->andWhere('p.cliente = :cliente')
               ->andWhere('cp.vigente = :vigente')
               ->groupBy('c.clienteId')
-              ->orderBy('p.fecha','DESC')
               ->setParameter(':cliente',$cliente)
               ->setParameter(':estado',$estadoPendientePago)
               ->setParameter(':vigente','S')
@@ -88,7 +87,7 @@ class ClienteRepository extends EntityRepository
           ->andWhere('cp.estado = :estado')
           ->andWhere('p.cliente = :cliente')
           ->andWhere('cp.vigente = :vigente')
-          ->orderBy('p.fecha','ASC')
+          ->groupBy('p.preventaId')
           ->setParameter(':cliente',$cliente)
           ->setParameter(':estado',$estadoPendientePago)
           ->setParameter(':vigente','S')

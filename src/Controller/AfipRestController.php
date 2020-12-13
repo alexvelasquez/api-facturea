@@ -2,12 +2,15 @@
 
 namespace App\Controller;
 
-// use App\Entity\Player;
+use App\Entity\Cliente;
+use App\Entity\Negocio;
+use App\Entity\Preventa;
+use App\Entity\ComprobantePreventa;
+use App\Entity\CuentaCorriente;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
-
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +20,9 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Gonzakpo\AfipBundle\Controller\AfipController;
 use Swagger\Annotations as SWG;
 use App\Extensions\AfipUtilitiesTrait;
+use App\Extensions\PDFUtilitiesTrait;
+use App\Extensions\ComprobantesUtilitiesTrait;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 
 
@@ -28,6 +34,8 @@ use App\Extensions\AfipUtilitiesTrait;
 class AfipRestController extends RestController
 {
     use AfipUtilitiesTrait;
+    use PDFUtilitiesTrait;
+    use ComprobantesUtilitiesTrait;
     /**
      * @Rest\Get("/estado", name="estado", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Devuelve el estado del servidor de AFIP.")
@@ -36,6 +44,7 @@ class AfipRestController extends RestController
      */
     public function estadoServidor (AfipController $afip)
     {
+
         $response = $afip->getWS()->ElectronicBilling->GetServerStatus();
         return $this->apiResponse($response,200);
     }
@@ -140,7 +149,7 @@ class AfipRestController extends RestController
      */
     public function Instructivo()
     {
-        $instructivo = file_get_contents($this->getParameter('public_directory').'/doc/Instructivo.pdf');
+        $instructivo = file_get_contents($this->getParameter('instructivo_url'));
         $response =  array('file' => "data:application/pdf;base64,".base64_encode($instructivo));
         return $this->apiResponse($response,200);
     }
@@ -196,7 +205,7 @@ class AfipRestController extends RestController
 
     /**
      * @Rest\Get("/condicionesVenta", name="condicionesVta", defaults={"_format":"json"})
-     * @SWG\Response(response=200,description="Devuelve todos los tipos de atributos.")
+     * @SWG\Response(response=200,description="Devuelve todos las condiciones de venta.")
      * @SWG\Response(response=400,description="Hubo un problema para recuperar los tipos de atributos")
      * @SWG\Tag(name="Afip")
      */
@@ -206,7 +215,62 @@ class AfipRestController extends RestController
         return $this->apiResponse($condicionesVenta,200);
     }
 
-    /** funciones adicionales **/
+    /**
+     * @Rest\Post("/generarComprobante", name="generar_comprobante", defaults={"_format":"json"})
+     * @Rest\RequestParam(name="cliente",nullable=false)
+     * @Rest\RequestParam(name="comprobante",nullable=false)
+     * @Rest\RequestParam(name="concepto",nullable=false)
+     * @Rest\RequestParam(name="fecha_emision",nullable=false)
+     * @Rest\RequestParam(name="fecha_desde",nullable=true)
+     * @Rest\RequestParam(name="fecha_hasta",nullable=true)
+     * @Rest\RequestParam(name="fecha_vto",nullable=true)
+     * @Rest\RequestParam(name="productos",nullable=false)
+     * @Rest\RequestParam(name="condicion_vta",nullable=false)
+     * @Rest\RequestParam(name="importes",nullable=false)
+     * @SWG\Response(response=200,description="Devuelve la factura en base 64.")
+     * @SWG\Response(response=400,description="Hubo un problema para generar la factura")
+     * @SWG\Tag(name="Afip")
+     */
+     public function generarComprobante (ParamFetcher $paramFetcher, AfipController $afip)
+     {
+        try{
+           /** begin transaccion */
+           $this->manager()->getConnection()->beginTransaction();
+           $ptoVta = $this->getUser()->getNegocio()->getPuntoVta();
+           $tipoComprobante = $this->manager()->getRepository("App:TipoComprobante")->findOneBy(['afipId'=>$paramFetcher->get('comprobante')]);
+           $comprobantePreventa = $this->registrarDatosComprobante($paramFetcher,$tipoComprobante,$afip);
+           /** obtengo los datos para el comprobante */
+           $data = $this->parametrosComprobanteAfip($paramFetcher,$tipoComprobante,$comprobantePreventa->getNumero());
+
+
+           if($tipoComprobante->getAfipId() != $this->getParameter('recibo')){
+             /**Creo el comprobante en AFIP */
+             $response = $afip->getWS()->ElectronicBilling->CreateVoucher($data);
+             /** Si lo creo correctamente, genero el comprobante pdf y commiteo la transaccion*/
+             if(empty($response['CAE'])){
+               /** obtengo datos necesarios para la generacion del pdf **/
+               throw new Exception('La factura no se generó, debido a un problema en AFIP');
+             }
+           }
+           // dd($response);
+           /** genero el pdf con los datos guardados **/
+           $data = $this->parametrosComprobantePDF($paramFetcher,$data,$tipoComprobante,$comprobantePreventa,$response ?? NULL);//true por el cpodigo de barras
+           $pdfData = $this->generarPdf('pdf/comprobante.html.twig',$data);
+           $response =  array('file' => "data:application/pdf;base64,".$pdfData);
+
+           /** persisto los datos*/
+           $this->manager()->flush();
+           $this->manager()->getConnection()->commit();
+           return $this->apiResponse($response,200);
+
+         } catch (\Exception $e) {
+             $this->manager()->getConnection()->rollback();
+             return $this->apiResponse(['data'=>$e->getMessage()],500);
+         }
+     }
+
+
+
 
 
 

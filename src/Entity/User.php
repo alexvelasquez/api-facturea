@@ -53,12 +53,6 @@ class User implements UserInterface
      */
     private $username;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="factura_electronica", type="string", length=1, nullable=true)
-     */
-    private $facturaElectronica;
 
     protected $salt;
 
@@ -95,7 +89,7 @@ class User implements UserInterface
      *
      * @ORM\ManyToOne(targetEntity="Negocio")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id")
+     *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id", nullable=true)
      * })
      */
     private $negocio;
@@ -106,7 +100,6 @@ class User implements UserInterface
       $this->lastname = $lastname;
       $this->username = $username;
       $this->email = $email;
-      $this->facturaElectronica = 'N';
       $this->negocio = $negocio;
     }
 
@@ -142,7 +135,7 @@ class User implements UserInterface
      */
     public function getLastName()
     {
-        return $this->lastName;
+        return $this->lastname;
     }
 
     /**
@@ -195,25 +188,6 @@ class User implements UserInterface
     public function setUsername($username)
     {
         $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getFacturaElectronica()
-    {
-        return $this->facturaElectronica;
-    }
-
-    /**
-     * @param mixed $username
-     * @return self
-     */
-    public function setFacturaElectronica($facturaElectronica)
-    {
-        $this->facturaElectronica = $facturaElectronica;
 
         return $this;
     }
@@ -277,7 +251,7 @@ class User implements UserInterface
      */
     public function getRoles()
     {
-        return ["ROLE_ADMIN"];
+        return $this->roles;
     }
 
     public function getSalt() {}

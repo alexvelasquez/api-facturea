@@ -24,6 +24,13 @@ class Categoria
     /**
      * @var string
      *
+     * @ORM\Column(name="codigo", type="integer", nullable=false)
+     */
+    private $codigo;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="descripcion", type="string", length=255, nullable=false)
      */
     private $descripcion;
@@ -39,11 +46,12 @@ class Categoria
     private $negocio;
 
 
-    public function __construct($descripcion,$negocio){
+    public function __construct($descripcion,$codigo,$negocio){
         $this->descripcion = $descripcion;
+        $this->codigo = $codigo;
         $this->negocio = $negocio;
     }
-    
+
     public function getCategoriaId(): ?int
     {
         return $this->categoriaId;
@@ -60,7 +68,18 @@ class Categoria
 
         return $this;
     }
-    
+
+    public function getCodigo(): ?int
+    {
+        return $this->codigo;
+    }
+
+    public function setCodigo(int $codigo): self
+    {
+        $this->codigo = $codigo;
+        return $this;
+    }
+
     public function getNegocio(): ?Negocio
     {
         return $this->negocio;

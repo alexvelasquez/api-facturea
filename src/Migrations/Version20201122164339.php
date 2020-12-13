@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20201120215915 extends AbstractMigration
+final class Version20201122164339 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -20,13 +20,17 @@ final class Version20201120215915 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql("INSERT INTO tipo_concepto ( afip_id, descripcion) VALUES ('1','Producto'),( '2','Servicios'),( '3','Productos y Servicios')");
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
+        $this->addSql('ALTER TABLE negocio ADD pedido_producto VARCHAR(1) DEFAULT NULL');
     }
 
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
+        $this->addSql('CREATE SCHEMA public');
+        $this->addSql('ALTER TABLE negocio DROP pedido_producto');
     }
 }

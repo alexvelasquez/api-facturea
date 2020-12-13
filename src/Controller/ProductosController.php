@@ -412,8 +412,8 @@ class ProductosController extends RestController
              }
              $nroMarca = $sheet->getCell('F'.$indice)->getValue();
              $nroCategoria = $sheet->getCell('G'.$indice)->getValue();
-             $marca = $this->manager()->getRepository("App:Marca")->findOneBy(['marcaId'=>$nroMarca,'negocio'=>$negocio]);
-             $categoria = $this->manager()->getRepository("App:Categoria")->findOneBy(['categoriaId'=>$nroCategoria,'negocio'=>$negocio]);
+             $marca = $this->manager()->getRepository("App:Marca")->findOneBy(['codigo'=>$nroMarca,'negocio'=>$negocio]);
+             $categoria = $this->manager()->getRepository("App:Categoria")->findOneBy(['codigo'=>$nroCategoria,'negocio'=>$negocio]);
              if(empty($marca) || empty($categoria)){
                throw new Exception('Los codigos de marca o categoria no son correctos');
              }

@@ -82,10 +82,10 @@ class ComprobantePreventa
      */
     private $preventa;
 
-    public function __construct($preventa,$estado,$vigente,$tipoComprobante = null,$condicionVta=null,$numero=null,$puntoVenta=null){
+    public function __construct($preventa,$estado,$tipoComprobante = null,$condicionVta=null,$numero=null,$puntoVenta=null){
       $this->preventa = $preventa;
       $this->estado = $estado;
-      $this->vigente = $vigente;
+      $this->vigente = 'S';
       $this->tipoComprobante = $tipoComprobante;
       $this->condicionVenta = $condicionVta;
       $this->numero = $numero;

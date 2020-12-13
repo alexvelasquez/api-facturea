@@ -7,6 +7,9 @@ use App\Entity\Negocio;
 use App\Entity\Notificacion;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use App\Extensions\MailUtilitiesTrait;
 use Swagger\Annotations as SWG;
 
 /**
@@ -24,7 +28,7 @@ use Swagger\Annotations as SWG;
 class LoginController extends RestController
 {
     // USER URI's
-
+    use MailUtilitiesTrait;
     /**
      * @Rest\Post("/login_check", name="user_login_check")
      *
@@ -47,6 +51,7 @@ class LoginController extends RestController
      * @SWG\Parameter(name="email",in="body",type="string",description="The username",schema={})
      * @SWG\Parameter(name="username",in="body",type="string",description="The username",schema={})
      * @SWG\Parameter(name="password",in="query",type="string",description="The password")
+     * @SWG\Parameter(name="administrador",in="query",type="string",description="The password")
      * @SWG\Tag(name="User")
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $encoder) {
@@ -55,13 +60,12 @@ class LoginController extends RestController
         try {
             $code = 200;
             $error = false;
-
             $name = $request->request->get('name');
             $lastname = $request->request->get('lastname');
             $email = $request->request->get('email');
             $username = $request->request->get('username');
             $password = $request->request->get('password');
-
+            $rol = empty($request->request->get('administrador')) ? ['ROLE_USER'] : ['ROLE_ADMIN'];
             /** verifico si el usuario ya esta en el sistema **/
             $emailExistente = $this->manager()->getRepository("App:User")->findOneBy(['email'=>$email]);
             $usernameExistente = $this->manager()->getRepository("App:User")->findOneBy(['username'=>$username]);
@@ -78,11 +82,12 @@ class LoginController extends RestController
             $user = new User($name,$lastname,$username,$email,$negocio);
             $user->setPlainPassword($password);
             $user->setPassword($encoder->encodePassword($user, $password));
+            $user->setRoles($rol);
             $this->manager()->persist($user);
 
             $titulo = 'Configuración Inicial';
             $texto = 'Bienvenido a Facturea '.strtoupper($name).' '.strtoupper($lastname).'<br>';
-            $texto .= 'Para empezar a utilizar nuestro sistema, deberas completar el formulario de configuración';
+            $texto .= 'Para empezar a utilizar nuestro sistema, deberás completar el formulario de configuración.';
             $notificacion = new Notificacion($titulo,$texto,$user,'/configuracion');
             $this->manager()->persist($notificacion);
 
@@ -113,4 +118,6 @@ class LoginController extends RestController
 
         return new Response($serializer->serialize($response, "json"));
     }
+
+
 }

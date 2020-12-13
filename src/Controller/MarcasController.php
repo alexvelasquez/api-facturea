@@ -59,7 +59,8 @@ class MarcasController extends RestController
     {
         try {
             $descripcion = $paramFetcher->get('descripcion');
-            $marca = new Marca($descripcion,$negocio);
+            $codigo = count($this->manager()->getRepository("App:Marca")->findBy(['negocio'=>$negocio])) + 1;
+            $marca = new Marca($descripcion,$codigo,$negocio);
             $this->manager()->persist($marca);
             $this->manager()->flush();
 

@@ -27,6 +27,8 @@ final class Version20201120215344 extends AbstractMigration
         $this->addSql("INSERT INTO tipo_comprobante (afip_id, descripcion, codigo) VALUES ( '1','Factura','A'),( '2','Nota de Débito','A'),( '3','Nota de Crédito','A'),( '4','Recibos','A'),( '6','Factura','B'),( '7','Nota de Débito','B'),( '8','Nota de Crédito','B'),( '9','Recibos','B'),( '11','Factura','C'),( '12','Nota de Débito','C'),( '13','Nota de Crédito','C'),( '15','Recibo','C'),( '99','Recibo','X')");
         $this->addSql("INSERT INTO tipo_documento ( afip_id, descripcion) VALUES ( '80','CUIT'),( '87','CDI'),( '91','CI Extranjera'),( '94','Pasaporte'),( '96','DNI'),( '99','Otro')");
         $this->addSql("INSERT INTO tipo_preventa (descripcion) VALUES ( 'Comprobante'),( 'Pedido')");
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql("INSERT INTO tipo_concepto ( afip_id, descripcion) VALUES ('1','Producto'),( '2','Servicios'),( '3','Productos y Servicios')");
     }
 
     public function down(Schema $schema) : void

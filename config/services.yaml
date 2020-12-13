@@ -4,15 +4,17 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-     public_directory: '%kernel.project_dir%\public'
+     public_directory: '%kernel.project_dir%/public'
+     instructivo_url: '%env(instructivo_url)%'
      cuenta_corriente: 4
      estado_cancelado: 4
      estado_pagado: 3
      estado_pendiente: 1
      estado_realizado: 2
      estado_pendiente_pago: 5
-     tipo_comprobante_recibo_afip: 99
+     recibo: 99
      tipo_preventa_pedido: 2
+     tipo_preventa_comprobante: 1
      responsable_inscripto: 1
 
 services:
