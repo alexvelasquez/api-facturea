@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Marca
+ * Localidad
  *
  * @ORM\Table(name="localidad", indexes={@ORM\Index(name="provincia_id", columns={"provincia_id"})})
  * @ORM\Entity
@@ -31,21 +31,18 @@ class Localidad
     /**
      * @var \Provincia
      *
-     * @ORM\ManyToOne(targetEntity="Provincia", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Provincia")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="provincia_id", referencedColumnName="provincia_id", nullable=false)
+     *   @ORM\JoinColumn(name="provincia_id", referencedColumnName="provincia_id")
      * })
      */
     private $provincia;
-
-
 
     public function __construct($descripcion,$provincia)
     {
         $this->descripcion = $descripcion;
         $this->provincia = $provincia;
     }
-
     public function getLocalidadId(): ?int
     {
         return $this->localidadId;
@@ -62,6 +59,7 @@ class Localidad
 
         return $this;
     }
+
     public function getProvincia(): ?Provincia
     {
         return $this->provincia;
@@ -73,7 +71,6 @@ class Localidad
 
         return $this;
     }
-
 
 
 }

@@ -2,20 +2,20 @@
 
 namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
-use App\Entity\ProductoPreventa;
+use App\Entity\ProductoVenta;
 
-class ProductoPreventaRepository extends EntityRepository
+class ProductoVentaRepository extends EntityRepository
 {
-    /** Genro los productos preventas */
-    public function generarProductosPreventas($productos,$preventa)
+    /** Genero los productos preventas */
+    public function generarProductosVentas($productos,$venta)
     {
       $em = $this->getEntityManager();
       foreach ($productos as $value) {
         $producto = $em->getRepository("App:Producto")->find($value['producto']['producto_id']);
-        if($producto->getStock() < $value['cantidad']){
-          throw new Exception('La cantidad del producto supera el stock actual');
-        }
         $cantidad = $value['cantidad'];
+        if($producto->getStock() < $cantidad){
+          throw new \Exception('La cantidad del producto supera el stock actual');
+        }
         /** actualizo el stock actual **/
         $producto->setStock($producto->getStock() - $cantidad);
         $subtotal = $value['subtotal'];
@@ -25,8 +25,8 @@ class ProductoPreventaRepository extends EntityRepository
         $precioUnitario = $value['precio_unitario'];
         $bonificacion = $value['bonificacion'];
         $alicuota = !empty($value['alicuota']) ? $em->getRepository("App:TipoAliCuota")->find($value['alicuota']['tipo_alicuota_id']) : null;
-        $productoPreventa = new ProductoPreventa($cantidad,$subtotal,$subtotalSinIva,$bonificacion,$montoBonif,$precioUnitario,$producto,$preventa,$alicuota,$montoIva);
-        $em->persist($productoPreventa);
+        $productoVenta = new ProductoVenta($cantidad,$subtotal,$subtotalSinIva,$bonificacion,$montoBonif,$precioUnitario,$producto,$venta,$alicuota,$montoIva);
+        $em->persist($productoVenta);
       }
     }
 
@@ -42,7 +42,7 @@ class ProductoPreventaRepository extends EntityRepository
           $producto = $em->getRepository("App:Producto")->find($value['producto']['producto_id']);
           $cantidad = $value['cantidad'];
           if($producto->getStock() < $cantidad ){
-            throw new Exception('La cantidad del producto supera el stock actual');
+            throw new \Exception('La cantidad del producto supera el stock actual');
           }
           /** modifico el stock actual **/
           $producto = $this->calcularStock($producto,$productoPreventa,$cantidad);
@@ -60,7 +60,7 @@ class ProductoPreventaRepository extends EntityRepository
           $producto = $em->getRepository("App:Producto")->find($value['producto']['producto_id']);
           $cantidad = $value['cantidad'];
           if($producto->getStock() < $cantidad ){
-            throw new Exception('La cantidad del producto supera el stock actual');
+            throw new \Exception('La cantidad del producto supera el stock actual');
           }
           $subtotal = $value['subtotal'];
           $montoBonif = $value['monto_bonif'];
@@ -69,7 +69,7 @@ class ProductoPreventaRepository extends EntityRepository
           $bonificacion = $value['bonificacion'];
           $subtotalSinIva = $value['subtotal_sin_iva'];
           $alicuota = !empty($value['alicuota']) ? $em->getRepository("App:TipoAliCuota")->find($value['alicuota']['tipo_alicuota_id']) : null;
-          $productoPreventa = new ProductoPreventa($cantidad,$subtotal,$subtotalSinIva,$bonificacion,$montoBonif,$precioUnitario,$producto,$preventa,$alicuota,$montoIva);
+          $productoPreventa = new ProductoVenta($cantidad,$subtotal,$subtotalSinIva,$bonificacion,$montoBonif,$precioUnitario,$producto,$preventa,$alicuota,$montoIva);
           $em->persist($productoPreventa);
         }
       }
@@ -100,30 +100,7 @@ class ProductoPreventaRepository extends EntityRepository
       return $producto;
     }
 
-    public function productosPreventaTipoProd($tipo,$estadoPendientePago,$esCategoria = null){
-      // dd($tipo);
-      $em = $this->getEntityManager();
-      // throw new Exception($estadoPreventa->getDescripcion());
-      $qb = $em->createQueryBuilder();
-      $qb->select('pp')
-          ->from('App:Preventa','p')
-          ->innerJoin('App:Cliente','c','WITH','c = p.cliente')
-          ->innerJoin('App:ComprobantePreventa', 'cp','WITH', 'p = cp.preventa')
-          ->innerJoin('App:ProductoPreventa', 'pp','WITH', 'p = pp.preventa')
-          ->innerJoin('App:Producto', 'prod','WITH', 'prod = pp.producto')
-          ->where('c.negocio = :negocio')
-          ->andWhere('cp.estado = :estado');
-          if(!empty($esCategoria)){
-            $qb->andWhere('prod.categoria = :tipo');
-          }
-          else{
-            $qb->andWhere('prod.marca = :tipo');
-          }
-        $qb->setParameter(':estado',$estadoPendientePago)
-        ->setParameter(':tipo',$tipo)
-        ->setParameter(':negocio',$tipo->getNegocio());
-      return $qb->getQuery()->getArrayResult();
-    }
+
 
 
 }

@@ -5,12 +5,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Condicion Venta
+ * CondicionVenta
  *
  * @ORM\Table(name="condicion_venta")
  * @ORM\Entity
  */
-  class CondicionVenta
+class CondicionVenta
 {
     /**
      * @var int
@@ -22,34 +22,31 @@ use Doctrine\ORM\Mapping as ORM;
     private $condicionVentaId;
 
     /**
-     * @var string|null
+     * @var string
      *
      * @ORM\Column(name="descripcion", type="string", length=255, nullable=false)
      */
     private $descripcion;
 
-
-
     public function __construct($descripcion){
-      $this->descripcion = $descripcion;
-    }
-
+        $this->descripcion = $descripcion;
+      }
     public function getCondicionVentaId(): ?int
     {
         return $this->condicionVentaId;
     }
-
 
     public function getDescripcion(): ?string
     {
         return $this->descripcion;
     }
 
-    public function setDescripcion(?string $descripcion): self
+    public function setDescripcion(string $descripcion): self
     {
         $this->descripcion = $descripcion;
 
         return $this;
     }
+
 
 }

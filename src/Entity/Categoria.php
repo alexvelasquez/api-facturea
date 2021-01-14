@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Categoria
  *
- * @ORM\Table(name="categoria",indexes={@ORM\Index(name="negocio_id", columns={"negocio_id"})})
+ * @ORM\Table(name="categoria")
  * @ORM\Entity
  */
 class Categoria
@@ -22,7 +22,7 @@ class Categoria
     private $categoriaId;
 
     /**
-     * @var string
+     * @var int
      *
      * @ORM\Column(name="codigo", type="integer", nullable=false)
      */
@@ -40,21 +40,31 @@ class Categoria
      *
      * @ORM\ManyToOne(targetEntity="Negocio")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id", nullable=false)
+     *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id")
      * })
      */
     private $negocio;
-
 
     public function __construct($descripcion,$codigo,$negocio){
         $this->descripcion = $descripcion;
         $this->codigo = $codigo;
         $this->negocio = $negocio;
     }
-
     public function getCategoriaId(): ?int
     {
         return $this->categoriaId;
+    }
+
+    public function getCodigo(): ?int
+    {
+        return $this->codigo;
+    }
+
+    public function setCodigo(int $codigo): self
+    {
+        $this->codigo = $codigo;
+
+        return $this;
     }
 
     public function getDescripcion(): ?string
@@ -66,17 +76,6 @@ class Categoria
     {
         $this->descripcion = $descripcion;
 
-        return $this;
-    }
-
-    public function getCodigo(): ?int
-    {
-        return $this->codigo;
-    }
-
-    public function setCodigo(int $codigo): self
-    {
-        $this->codigo = $codigo;
         return $this;
     }
 

@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Cliente
  *
- * @ORM\Table(name="cliente", indexes={@ORM\Index(name="localidad_id", columns={"localidad_id"}),  @ORM\Index(name="tipo_documento_id", columns={"tipo_documento_id"}), @ORM\Index(name="condicion_iva_id", columns={"condicion_iva_id"})})
- * @ORM\Entity(repositoryClass="App\Repository\ClienteRepository");
+ * @ORM\Table(name="cliente", indexes={@ORM\Index(name="negocio_id", columns={"negocio_id"}), @ORM\Index(name="tipo_documento_id", columns={"tipo_documento_id"}), @ORM\Index(name="condicion_iva_id", columns={"condicion_iva_id"}), @ORM\Index(name="localidad_id", columns={"localidad_id"})})
+ * @ORM\Entity
  */
 class Cliente
 {
@@ -31,77 +31,57 @@ class Cliente
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255, nullable=true)
+     * @ORM\Column(name="email", type="string", length=255, nullable=false)
      */
     private $email;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="direccion", type="string", length=255, nullable=true)
+     * @ORM\Column(name="direccion", type="string", length=255, nullable=false)
      */
     private $direccion;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="telefono",  type="string", length=255, nullable=true)
+     * @ORM\Column(name="telefono", type="string", length=255, nullable=false)
      */
     private $telefono;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="documento",  type="string", length=255, nullable=true)
+     * @ORM\Column(name="documento", type="string", length=255, nullable=false)
      */
     private $documento;
 
+
     /**
-     * @var \DateTime|null
+     * @var \DateTime
      *
-     * @ORM\Column(name="f_creacion", type="datetimetz", nullable=false)
+     * @ORM\Column(name="f_creacion", type="datetime", nullable=false)
      */
     private $fCreacion;
 
     /**
-     * @var \DateTime|null
+     * @var \DateTime
      *
-     * @ORM\Column(name="f_modificacion", type="datetimetz", nullable=false)
+     * @ORM\Column(name="f_modificacion", type="datetime", nullable=false)
      */
     private $fModificacion;
 
     /**
-     * @var \DateTime|null
+     * @var \DateTime
      *
-     * @ORM\Column(name="f_hasta", type="datetimetz", nullable=true)
+     * @ORM\Column(name="f_hasta", type="datetime", nullable=true)
      */
     private $fHasta;
 
     /**
-     * @var \Localidad
-     *
-     * @ORM\ManyToOne(targetEntity="Localidad", fetch="EAGER")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="localidad_id", referencedColumnName="localidad_id")
-     * })
-     */
-    private $localidad;
-
-
-    /**
-     * @var \TipoDocumento
-     *
-     * @ORM\ManyToOne(targetEntity="TipoDocumento",  fetch="EAGER")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="tipo_documento_id", referencedColumnName="tipo_documento_id")
-     * })
-     */
-    private $tipoDocumento;
-
-    /**
      * @var \CondicionIva
      *
-     * @ORM\ManyToOne(targetEntity="CondicionIva", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="CondicionIva")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="condicion_iva_id", referencedColumnName="condicion_iva_id")
      * })
@@ -109,17 +89,35 @@ class Cliente
     private $condicionIva;
 
     /**
+     * @var \Localidad
+     *
+     * @ORM\ManyToOne(targetEntity="Localidad")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="localidad_id", referencedColumnName="localidad_id")
+     * })
+     */
+    private $localidad;
+
+    /**
      * @var \Negocio
      *
-     * @ORM\ManyToOne(targetEntity="Negocio", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Negocio")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id")
      * })
      */
     private $negocio;
 
-    private $montoDebido;// se agrega un campo para totalizar lo debido
 
+    /**
+     * @var \TipoDocumento
+     *
+     * @ORM\ManyToOne(targetEntity="TipoDocumento")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="tipo_documento_id", referencedColumnName="tipo_documento_id")
+     * })
+     */
+    private $tipoDocumento;
     public function __construct($razonSocial, $email, $localidad, $direccion, $telefono,$tipoDoc, $documento,$condIva, $negocio ){
         $this->razonSocial = $razonSocial;
         $this->email = $email;
@@ -133,7 +131,6 @@ class Cliente
         $this->fCreacion = new \DateTime();
         $this->fModificacion = new \DateTime();
     }
-
     public function getClienteId(): ?int
     {
         return $this->clienteId;
@@ -151,18 +148,6 @@ class Cliente
         return $this;
     }
 
-    public function getDocumento(): ?string
-    {
-        return $this->documento;
-    }
-
-    public function setDocumento(string $documento): self
-    {
-        $this->documento = $documento;
-
-        return $this;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -171,67 +156,6 @@ class Cliente
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-
-    public function getFModificacion(): ?\DateTimeInterface
-    {
-        return $this->fModificacion;
-    }
-
-    public function setFModificacion(?\DateTimeInterface $fModificacion): self
-    {
-        $this->fModificacion = $fModificacion;
-
-        return $this;
-    }
-
-    public function getFHasta(): ?\DateTimeInterface
-    {
-        return $this->fHasta;
-    }
-
-    public function setFHasta(?\DateTimeInterface $fHasta): self
-    {
-        $this->fHasta = $fHasta;
-
-        return $this;
-    }
-
-    public function getLocalidad(): ?Localidad
-    {
-        return $this->localidad;
-    }
-
-    public function setLocalidad(Localidad $localidad): self
-    {
-        $this->localidad = $localidad;
-
-        return $this;
-    }
-
-    public function getTipoDocumento(): ?TipoDocumento
-    {
-        return $this->tipoDocumento;
-    }
-
-    public function setTipoDocumento(?TipoDocumento $tipoDocumento): self
-    {
-        $this->tipoDocumento = $tipoDocumento;
-
-        return $this;
-    }
-
-    public function getCondicionIva(): ?CondicionIva
-    {
-        return $this->condicionIva;
-    }
-
-    public function setCondicionIva(?CondicionIva $condicionIva): self
-    {
-        $this->condicionIva = $condicionIva;
 
         return $this;
     }
@@ -253,9 +177,81 @@ class Cliente
         return $this->telefono;
     }
 
-    public function setTelefono(?string $telefono): self
+    public function setTelefono(string $telefono): self
     {
         $this->telefono = $telefono;
+
+        return $this;
+    }
+
+    public function getDocumento(): ?string
+    {
+        return $this->documento;
+    }
+
+    public function setDocumento(string $documento): self
+    {
+        $this->documento = $documento;
+
+        return $this;
+    }
+
+    public function getFCreacion(): ?\DateTimeInterface
+    {
+        return $this->fCreacion;
+    }
+
+    public function setFCreacion(\DateTimeInterface $fCreacion): self
+    {
+        $this->fCreacion = $fCreacion;
+
+        return $this;
+    }
+
+    public function getFModificacion(): ?\DateTimeInterface
+    {
+        return $this->fModificacion;
+    }
+
+    public function setFModificacion(\DateTimeInterface $fModificacion): self
+    {
+        $this->fModificacion = $fModificacion;
+
+        return $this;
+    }
+
+    public function getFHasta(): ?\DateTimeInterface
+    {
+        return $this->fHasta;
+    }
+
+    public function setFHasta(\DateTimeInterface $fHasta): self
+    {
+        $this->fHasta = $fHasta;
+
+        return $this;
+    }
+
+    public function getCondicionIva(): ?CondicionIva
+    {
+        return $this->condicionIva;
+    }
+
+    public function setCondicionIva(?CondicionIva $condicionIva): self
+    {
+        $this->condicionIva = $condicionIva;
+
+        return $this;
+    }
+
+    public function getLocalidad(): ?Localidad
+    {
+        return $this->localidad;
+    }
+
+    public function setLocalidad(?Localidad $localidad): self
+    {
+        $this->localidad = $localidad;
 
         return $this;
     }
@@ -272,15 +268,17 @@ class Cliente
         return $this;
     }
 
-    public function getMontoDebido(): ?float
+    public function getTipoDocumento(): ?TipoDocumento
     {
-        return $this->montoDebido;
+        return $this->tipoDocumento;
     }
 
-    public function setMontoDebido(?float $montoDebido): self
+    public function setTipoDocumento(?TipoDocumento $tipoDocumento): self
     {
-        $this->montoDebido = $montoDebido;
+        $this->tipoDocumento = $tipoDocumento;
 
         return $this;
     }
+
+
 }

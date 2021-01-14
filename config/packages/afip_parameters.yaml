@@ -2,8 +2,8 @@ afip:
     parameters:
         CUIT: 20306094905
         production: false
-        res_folder: 'src/Afip_res/'
-        ta_folder: 'src/Afip_res/'
+        res_folder: 'config/afip/'
+        ta_folder:  'var/cache/'
         cert: 'cert'
         key: 'key'
         passphrase: ''

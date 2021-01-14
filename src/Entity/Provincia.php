@@ -22,32 +22,34 @@ class Provincia
     private $provinciaId;
 
     /**
-     * @var string|null
+     * @var int
      *
      * @ORM\Column(name="geo_id", type="integer", nullable=false)
      */
     private $geoId;
 
     /**
-     * @var string|null
+     * @var string
      *
      * @ORM\Column(name="descripcion", type="string", length=255, nullable=false)
      */
     private $descripcion;
+        public function __construct($geoId,$descripcion){
+        $this->geoId=$geoId;
+        $this->descripcion = $descripcion;
+      }
 
-
-
-    public function __construct($geoId,$descripcion){
-      $this->geoId=$geoId;
-      $this->descripcion = $descripcion;
+    public function getProvinciaId(): ?int
+    {
+        return $this->provinciaId;
     }
 
-    public function getGeoId(): ?string
+    public function getGeoId(): ?int
     {
         return $this->geoId;
     }
 
-    public function setGeoId(?string $geoId): self
+    public function setGeoId(int $geoId): self
     {
         $this->geoId = $geoId;
 
@@ -59,11 +61,12 @@ class Provincia
         return $this->descripcion;
     }
 
-    public function setDescripcion(?string $descripcion): self
+    public function setDescripcion(string $descripcion): self
     {
         $this->descripcion = $descripcion;
 
         return $this;
     }
+
 
 }

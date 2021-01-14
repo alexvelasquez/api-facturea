@@ -1,20 +1,13 @@
 <?php
 
 namespace App\Controller;
-
-use App\Entity\Producto;
 use App\Entity\Negocio;
 use App\Entity\Categoria;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use App\Extensions\PDFUtilitiesTrait;
 
@@ -43,19 +36,20 @@ class CategoriasController extends RestController
     }
 
     /**
-     * @Rest\Post("/negocio/{negocio}/nuevo", name="nueva_categoria", defaults={"_format":"json"})
+     * @Rest\Post("/nuevo", name="nueva_categoria", defaults={"_format":"json"})
      * @Rest\RequestParam(name="descripcion",nullable=false)
-     * @SWG\Response(response=201,description="Producto creado correctamente")
+     * @SWG\Response(response=201,description="Categoria creada correctamente")
      * @SWG\Response(response=400,description="Ha ocurrido un error en los parametros")}
      * @SWG\Response(response=500,description="Ha ocurrido un error al crear la categoria")
      * @SWG\Parameter(name="descripcion",in="body",type="string",description="descripcion categoria",schema={})
 
      * @SWG\Tag(name="Categoria")
      */
-    public function nuevaCategoria(Request $request, Negocio $negocio)
+    public function nuevaCategoria(Request $request)
     {
         try {
             $descripcion = $request->request->get('descripcion');
+            $negocio = $this->getUser()->getNegocio();
             $codigo = count($this->manager()->getRepository("App:Categoria")->findBy(['negocio'=>$negocio]))+ 1;
             $categoria = new Categoria($descripcion,$codigo,$negocio);
             $this->manager()->persist($categoria);
@@ -68,7 +62,7 @@ class CategoriasController extends RestController
 
     /**
      * @Rest\Put("/editar/{categoria}", name="editar_categoria", defaults={"_format":"json"})
-     * @SWG\Response(response=200,description="Actualiza la catgegoria de un negocio.")
+     * @SWG\Response(response=200,description="Categoria actualizada correctamente.")
      * @SWG\Response(response=400,description="Error en los parametros")
      * @SWG\Response(response=500,description="Error en el servidor")
      *

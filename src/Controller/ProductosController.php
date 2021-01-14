@@ -4,21 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Producto;
 use App\Entity\Negocio;
-use App\Entity\Marca;
-use App\Entity\Categoria;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Request\ParamFetcher;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
 // Include PhpSpreadsheet required namespaces
@@ -37,7 +29,7 @@ class ProductosController extends RestController
     use ExcelUtilitiesTrait;
      /**
      * @Rest\Get("/negocio/{negocio}", name="lista_productos", defaults={"_format":"json"})
-     * @SWG\Response(response=200,description="Devuelve todas los productos de un negocio.")
+     * @SWG\Response(response=200,description="Devuelve todo los productos de un negocio.")
      * @SWG\Response(response=500,description="Hubo un problema para recuperar los productos de un negocio")
      * @SWG\Tag(name="Producto")
      */
@@ -52,7 +44,14 @@ class ProductosController extends RestController
     }
 
     /**
-     * @Rest\Post("/negocio/{negocio}/nuevo", name="nuevo_producto", defaults={"_format":"json"})
+     * @Rest\Post("/nuevo", name="nuevo_producto", defaults={"_format":"json"})
+     * @Rest\RequestParam(name="descripcion",nullable=false)
+     * @Rest\RequestParam(name="codigo",nullable=false)
+     * @Rest\RequestParam(name="stock",nullable=false)
+     * @Rest\RequestParam(name="categoria",nullable=false)
+     * @Rest\RequestParam(name="marca",nullable=false)
+     * @Rest\RequestParam(name="precio_compra",nullable=false)
+     * @Rest\RequestParam(name="aumento",nullable=false)
      * @SWG\Response(response=201,description="Producto creado correctamente")
      * @SWG\Response(response=400,description="Ha ocurrido un error en los parametros")}
      * @SWG\Response(response=500,description="Ha ocurrido un error al crear el producto")
@@ -64,21 +63,17 @@ class ProductosController extends RestController
      * @SWG\Parameter(name="incremento",in="body",type="string",description="incremento (porcentaje)",schema={})
      * @SWG\Tag(name="Producto")
      */
-    public function nuevoProducto(Request $request, Negocio $negocio)
+    public function nuevoProducto(Request $request)
     {
         try {
-            $errores = [];
-            !empty($request->request->get('descripcion')) ? $descripcion = $request->request->get('descripcion')    :  $errores['descripcion'] = 'Este campo es obligatorio';
-            !empty($request->request->get('codigo')) || $request->request->get('codigo') != "0"  ? $codigo  = $request->request->get('codigo')     :  $errores['codigo'] = 'Este campo es obligatorio';
-            !empty($request->request->get('stock'))  ? $stock  = $request->request->get('stock')     :  $errores['stock'] = 'Este campo es obligatorio';
-            !empty($request->request->get('categoria'))  ? $categoria  = $request->request->get('categoria')['categoria_id']    :  $errores['categoria'] = 'Este campo es obligatorio';
-            !empty($request->request->get('marca'))  ? $marca  = $request->request->get('marca')['marca_id']    :  $errores['marca'] = 'Este campo es obligatorio';
-            !empty($request->request->get('precio_compra')) ? $precioCompra = $request->request->get('precio_compra')    :  $errores['precio_compra'] = 'Este campo es obligatorio' ;
-            !empty($request->request->get('aumento')) ? $aumento = $request->request->get('aumento')    :  $errores['aumento'] = 'Este campo es obligatorio' ;
-            if(!empty($errores))
-            {
-                return $this->apiResponse($errores,400);
-            }
+            $negocio = $this->getUser()->getNegocio();
+            $descripcion = $request->request->get('descripcion');
+            $codigo  = $request->request->get('codigo');
+            $stock  = $request->request->get('stock');
+            $categoria  = $request->request->get('categoria')['categoria_id'];
+            $marca  = $request->request->get('marca')['marca_id'];
+            $precioCompra = $request->request->get('precio_compra');
+            $aumento = $request->request->get('aumento');
             $categoria = $this->manager()->getRepository("App:Categoria")->find($categoria);
             $marca = $this->manager()->getRepository("App:Marca")->find($marca);
             $producto = new Producto($descripcion,$codigo,$stock,$categoria,$marca,$precioCompra,$aumento,$negocio);
@@ -88,7 +83,7 @@ class ProductosController extends RestController
 
             return $this->apiResponse($producto,201);
         } catch (Exception $e) {
-            return $this->apiResponse($ex->getMessage(),500);
+            return $this->apiResponse($e->getMessage(),500);
         }
     }
 

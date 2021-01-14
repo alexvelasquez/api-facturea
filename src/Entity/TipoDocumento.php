@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="tipo_documento")
  * @ORM\Entity
  */
-  class TipoDocumento
+class TipoDocumento
 {
     /**
      * @var int
@@ -22,36 +22,35 @@ use Doctrine\ORM\Mapping as ORM;
     private $tipoDocumentoId;
 
     /**
-     * @var string|null
+     * @var int
      *
      * @ORM\Column(name="afip_id", type="integer", nullable=false)
      */
     private $afipId;
 
     /**
-     * @var string|null
+     * @var string
      *
      * @ORM\Column(name="descripcion", type="string", length=255, nullable=false)
      */
     private $descripcion;
 
-
-
     public function __construct($afipId,$descripcion){
-      $this->afipId=$afipId;
-      $this->descripcion = $descripcion;
-    }
+        $this->afipId=$afipId;
+        $this->descripcion = $descripcion;
+      }
 
     public function getTipoDocumentoId(): ?int
     {
         return $this->tipoDocumentoId;
     }
+
     public function getAfipId(): ?int
     {
         return $this->afipId;
     }
 
-    public function setAfipId(?string $afipId): self
+    public function setAfipId(int $afipId): self
     {
         $this->afipId = $afipId;
 
@@ -63,11 +62,12 @@ use Doctrine\ORM\Mapping as ORM;
         return $this->descripcion;
     }
 
-    public function setDescripcion(?string $descripcion): self
+    public function setDescripcion(string $descripcion): self
     {
         $this->descripcion = $descripcion;
 
         return $this;
     }
+
 
 }

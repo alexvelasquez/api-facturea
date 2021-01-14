@@ -22,37 +22,34 @@ class CondicionIva
     private $condicionIvaId;
 
     /**
-     * @var string|null
+     * @var int
      *
      * @ORM\Column(name="afip_id", type="integer", nullable=false)
      */
     private $afipId;
 
     /**
-     * @var string|null
+     * @var string
      *
      * @ORM\Column(name="descripcion", type="string", length=255, nullable=false)
      */
     private $descripcion;
 
-
-
     public function __construct($afipId,$descripcion){
-      $this->afipId=$afipId;
-      $this->descripcion = $descripcion;
-    }
-
+        $this->afipId=$afipId;
+        $this->descripcion = $descripcion;
+      }
     public function getCondicionIvaId(): ?int
     {
         return $this->condicionIvaId;
     }
 
-    public function getAfipId(): ?string
+    public function getAfipId(): ?int
     {
         return $this->afipId;
     }
 
-    public function setAfipId(?string $afipId): self
+    public function setAfipId(int $afipId): self
     {
         $this->afipId = $afipId;
 
@@ -64,11 +61,12 @@ class CondicionIva
         return $this->descripcion;
     }
 
-    public function setDescripcion(?string $descripcion): self
+    public function setDescripcion(string $descripcion): self
     {
         $this->descripcion = $descripcion;
 
         return $this;
     }
+
 
 }

@@ -5,10 +5,10 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * CuentaCorriente
+ * Movimiento
  *
- * @ORM\Table(name="movimiento", indexes={@ORM\Index(name="movimiento_id", columns={"movimiento_id"})})
- * @ORM\Entity;
+ * @ORM\Table(name="movimiento", indexes={@ORM\Index(name="cuenta_corriente_id", columns={"cuenta_corriente_id"})})
+ * @ORM\Entity
  */
 class Movimiento
 {
@@ -24,96 +24,86 @@ class Movimiento
     /**
      * @var float
      *
-     * @ORM\Column(name="monto_pagado", type="float", precision=10, scale=0, nullable=false)
+     * @ORM\Column(name="valor", type="float", precision=10, scale=0, nullable=false)
      */
-    private $montoPagado;
+    private $valor;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="f_creacion", type="datetime", nullable=false)
+     */
+    private $fCreacion;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="observacion", type="string", length=255, nullable=true)
+     * @ORM\Column(name="observacion", type="string", length=255, nullable=false)
      */
     private $observacion;
 
-
     /**
-     * @var \DateTime|null
+     * @var \CuentaCorriente
      *
-     * @ORM\Column(name="f_creacion", type="datetimetz", nullable=false)
-     */
-    private $fCreacion;
-
-
-
-    /**
-     * @var \Cliente
-     *
-     * @ORM\ManyToOne(targetEntity="Cliente",fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="CuentaCorriente")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="cliente_id", referencedColumnName="cliente_id",nullable=false)
+     *   @ORM\JoinColumn(name="cuenta_corriente_id", referencedColumnName="cuenta_corriente_id")
      * })
      */
-    private $cliente;
-
-
-
-    public function __construct($cliente)
-    {
-      $this->cliente = $cliente;
-      $this->montoPagado = 0;
-      $this->fCreacion = new \DateTime();
-    }
+    private $cuentaCorriente;
 
     public function getMovimientoId(): ?int
     {
         return $this->movimientoId;
     }
 
+    public function getValor(): ?float
+    {
+        return $this->valor;
+    }
 
+    public function setValor(float $valor): self
+    {
+        $this->valor = $valor;
+
+        return $this;
+    }
 
     public function getFCreacion(): ?\DateTimeInterface
     {
         return $this->fCreacion;
     }
 
-    public function setFCreacion(?\DateTimeInterface $fCreacion): self
+    public function setFCreacion(\DateTimeInterface $fCreacion): self
     {
         $this->fCreacion = $fCreacion;
 
         return $this;
     }
-    public function getMontoPagado(): ?float
-    {
-        return $this->montoPagado;
-    }
 
-    public function setMontoPagado(float $montoPagado): self
-    {
-        $this->montoPagado = $montoPagado;
-
-        return $this;
-    }
-
-    public function getObservacion(): ?String
+    public function getObservacion(): ?string
     {
         return $this->observacion;
     }
 
-    public function setObservacion(String $observacion): self
+    public function setObservacion(string $observacion): self
     {
         $this->observacion = $observacion;
 
         return $this;
     }
 
-    public function getCliente(): ?Cliente
+    public function getCuentaCorriente(): ?CuentaCorriente
     {
-        return $this->cliente;
+        return $this->cuentaCorriente;
     }
 
-    public function setCliente(?Preventa $cliente): self
+    public function setCuentaCorriente(?CuentaCorriente $cuentaCorriente): self
     {
-        $this->cliente = $cliente;
+        $this->cuentaCorriente = $cuentaCorriente;
+
         return $this;
     }
+
+
 }

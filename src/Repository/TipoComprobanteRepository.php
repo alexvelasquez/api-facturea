@@ -8,20 +8,23 @@ use Doctrine\ORM\EntityRepository;
 class TipoComprobanteRepository extends EntityRepository
 {
     /** Retorno los tipos de comprobantes dada la condicion frente al IVA del cliente */
-    public function tiposComprobantesIva($condicionIva)
+    public function tiposComprobantesIva($comprobantes)
     {
       $em = $this->getEntityManager();
       $qb = $em->createQueryBuilder();
+      $whereCondicion = '(';
+      foreach ($comprobantes as $key=>$value) {
+        $whereCondicion .= $value;
+        if($key < count($comprobantes) -1){
+          $whereCondicion .= ',';
+        }
+      }
+      $whereCondicion .= ')';
+
       $qb->select('tc')
           ->from('App:TipoComprobante', 'tc');
-      if(empty($condicionIva)){
         /** usuario no inscrito en la AFIP*/
-        $qb->where('tc.afipId = 99');
-      }
-      else{
-      /** '1' -> responsable inscripto */
-        ($condicionIva == 1 ) ? $qb->where('tc.afipId BETWEEN 1 AND 9') : $qb->where('tc.afipId BETWEEN 11 AND 15');
-      }
+      $qb->where($whereCondicion);
       return $qb->getQuery()->getArrayResult();
     }
 }

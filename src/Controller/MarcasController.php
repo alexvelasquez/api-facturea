@@ -46,7 +46,7 @@ class MarcasController extends RestController
     }
 
     /**
-     * @Rest\Post("/negocio/{negocio}/nuevo", name="nueva_marca", defaults={"_format":"json"})
+     * @Rest\Post("/nuevo", name="nueva_marca", defaults={"_format":"json"})
      * @Rest\RequestParam(name="descripcion",nullable=false)
      * @SWG\Response(response=201,description="Producto creado correctamente")
      * @SWG\Response(response=400,description="Ha ocurrido un error en los parametros")}
@@ -55,10 +55,11 @@ class MarcasController extends RestController
 
      * @SWG\Tag(name="Marca")
      */
-    public function nuevaMarca(ParamFetcher $paramFetcher, Negocio $negocio)
+    public function nuevaMarca(ParamFetcher $paramFetcher)
     {
         try {
             $descripcion = $paramFetcher->get('descripcion');
+            $negocio = $this->getUser()->getNegocio();
             $codigo = count($this->manager()->getRepository("App:Marca")->findBy(['negocio'=>$negocio])) + 1;
             $marca = new Marca($descripcion,$codigo,$negocio);
             $this->manager()->persist($marca);

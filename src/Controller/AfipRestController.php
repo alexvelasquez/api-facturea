@@ -2,21 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\Cliente;
-use App\Entity\Negocio;
-use App\Entity\Preventa;
-use App\Entity\ComprobantePreventa;
-use App\Entity\CuentaCorriente;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Gonzakpo\AfipBundle\Controller\AfipController;
 use Swagger\Annotations as SWG;
 use App\Extensions\AfipUtilitiesTrait;
@@ -101,10 +91,19 @@ class AfipRestController extends RestController
    public function tiposComprobantesPorIVA(ParamFetcher $paramFetcher)
    {
         $condicionIva = $paramFetcher->get('afip_id');
-        $tiposComprobantes =  $this->manager()->getRepository("App:TipoComprobante")->tiposComprobantesIva($condicionIva);
+        if(!empty($condicionIva) && $condicionIva == $this->getParameter('responsable_inscripto')){
+            $comprobantes[] = $this->getParameter('factura_A'); 
+            $comprobantes[] = $this->getParameter('factura_B');
+        }
+        elseif(!empty($condicionIva)){
+            $comprobantes[] =  $this->getParameter('factura_C');
+        }
+        $comprobantes[] =  $this->getParameter('recibo');
+        $tiposComprobantes =  $this->manager()->getRepository("App:TipoComprobante")->tiposComprobantesIva($comprobantes);
         return $this->apiResponse($tiposComprobantes,200);
    }
 
+   
 
     /**
      * @Rest\Get("/tiposConceptos", name="tiposConceptos", defaults={"_format":"json"})
@@ -112,7 +111,7 @@ class AfipRestController extends RestController
      * @SWG\Response(response=400,description="Hubo un problema para recuperar los tipos de conceptos")
      * @SWG\Tag(name="Afip")
      */
-    public function tiposConceptos(AfipController $afip)
+    public function tiposConceptos()
     {
         $response =$this->manager()->getRepository("App:TipoConcepto")->findAll();
         return $this->apiResponse($response,200);
@@ -162,7 +161,7 @@ class AfipRestController extends RestController
      */
     public function tiposAliCuotas()
     {
-        $tiposAliCuotas =  $this->manager()->getRepository("App:TipoAliCuota")->findAll();
+        $tiposAliCuotas =  $this->manager()->getRepository("App:TipoAlicuota")->findAll();
         return $this->apiResponse($tiposAliCuotas,200);
     }
 

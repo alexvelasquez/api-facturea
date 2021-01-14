@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Notificacion
  *
- * @ORM\Table(name="notificacion", indexes={@ORM\Index(name="id", columns={"user_id"})})
+ * @ORM\Table(name="notificacion", indexes={@ORM\Index(name="usuario_id", columns={"usuario_id"})})
  * @ORM\Entity
  */
 class Notificacion
@@ -22,52 +22,51 @@ class Notificacion
     private $notificacionId;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="titulo", type="string", length=255, nullable=false)
-     */
-    private $titulo;
-
-    /**
-     * @var string
+     * @var int
      *
      * @ORM\Column(name="mensaje", type="text", nullable=false)
      */
     private $mensaje;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="redireccion", type="string", length=255, nullable=true)
-     */
-    private $url;
-
-    /**
-     * @var string
+     * @var int
      *
      * @ORM\Column(name="leido", type="string", length=1, nullable=false)
      */
     private $leido;
 
     /**
-     * @var \User
+     * @var int
+     *
+     * @ORM\Column(name="titulo", type="string", length=255, nullable=false)
+     */
+    private $titulo;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="redireccion",type="string", length=255, nullable=false)
+     */
+    private $redireccion;
+
+    /**
+     * @var \Usuario
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="usuario_id", referencedColumnName="id")
      * })
      */
-    private $user;
+    private $usuario;
 
     public function __construct($titulo,$mensaje,$user,$url)
     {
         $this->titulo = $titulo;
         $this->mensaje = $mensaje;
-        $this->user = $user;
-        $this->url = $url;
+        $this->usuario = $user;
+        $this->redireccion = $url;
         $this->leido = 'N';
     }
-
 
     public function getNotificacionId(): ?int
     {
@@ -79,13 +78,59 @@ class Notificacion
         return $this->mensaje;
     }
 
+    public function setMensaje(string $mensaje): self
+    {
+        $this->mensaje = $mensaje;
+
+        return $this;
+    }
+
     public function getLeido(): ?string
     {
         return $this->leido;
     }
-    public function setLeido($value): ?string
+
+    public function setLeido(string $leido): self
     {
-        return $this->leido=$value;
+        $this->leido = $leido;
+
+        return $this;
+    }
+
+    public function getTitulo(): ?string
+    {
+        return $this->titulo;
+    }
+
+    public function setTitulo(string $titulo): self
+    {
+        $this->titulo = $titulo;
+
+        return $this;
+    }
+
+    public function getRedireccion(): ?string
+    {
+        return $this->redireccion;
+    }
+
+    public function setRedireccion(string $redireccion): self
+    {
+        $this->redireccion = $redireccion;
+
+        return $this;
+    }
+
+    public function getUsuario(): ?Usuario
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?Usuario $usuario): self
+    {
+        $this->usuario = $usuario;
+
+        return $this;
     }
 
 

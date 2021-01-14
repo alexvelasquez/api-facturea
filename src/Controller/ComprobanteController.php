@@ -44,16 +44,16 @@ class ComprobanteController extends RestController
     */
    public function comprobantes(ParamFetcher $paramFetcher, Negocio $negocio)
    {
-       try
-       {
-           $fechaDesde = $paramFetcher->get('fechaDesde').' 00:00:00';
-           $fechaHasta = $paramFetcher->get('fechaHasta').' 23:59:59';
-           $response = $this->manager()->getRepository("App:ComprobantePreventa")->comprobantes($negocio,$fechaDesde,$fechaHasta);
-           return $this->apiResponse($response,200);
-       } catch (Exception $e)
-       {
-           return $this->apiResponse($ex->getMessage(),500);
-       }
+    //    try
+    //    {
+    //        $fechaDesde = $paramFetcher->get('fechaDesde').' 00:00:00';
+    //        $fechaHasta = $paramFetcher->get('fechaHasta').' 23:59:59';
+    //        $response = $this->manager()->getRepository("App:ComprobantePreventa")->comprobantes($negocio,$fechaDesde,$fechaHasta);
+    //        return $this->apiResponse($response,200);
+    //    } catch (Exception $e)
+    //    {
+    //        return $this->apiResponse($e->getMessage(),500);
+    //    }
    }
 
 }

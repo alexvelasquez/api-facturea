@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Producto
  *
- * @ORM\Table(name="producto", indexes={@ORM\Index(name="marca_id", columns={"marca_id"}),@ORM\Index(name="categoria_id", columns={"categoria_id"})})
+ * @ORM\Table(name="producto", indexes={@ORM\Index(name="negocio_id", columns={"negocio_id"}), @ORM\Index(name="categoria_id", columns={"categoria_id"}), @ORM\Index(name="marca_id", columns={"marca_id"})})
  * @ORM\Entity
  */
 class Producto
@@ -22,9 +22,9 @@ class Producto
     private $productoId;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="codigo", type="integer", nullable=false)
+     * @ORM\Column(name="codigo", type="string", length=255, nullable=false)
      */
     private $codigo;
 
@@ -56,58 +56,56 @@ class Producto
      */
     private $aumento;
 
-
     /**
-     * @var \DateTime|null
+     * @var \DateTime
      *
-     * @ORM\Column(name="f_creacion", type="datetimetz", nullable=false)
+     * @ORM\Column(name="f_creacion", type="datetime", nullable=false)
      */
     private $fCreacion;
 
     /**
-     * @var \DateTime|null
+     * @var \DateTime
      *
-     * @ORM\Column(name="f_modificacion", type="datetimetz", nullable=false)
+     * @ORM\Column(name="f_modificacion", type="datetime", nullable=false)
      */
     private $fModificacion;
 
     /**
-     * @var \DateTime|null
+     * @var \DateTime
      *
-     * @ORM\Column(name="f_hasta", type="datetimetz", nullable=true)
+     * @ORM\Column(name="f_hasta", type="datetime", nullable=true)
      */
     private $fHasta;
-
-    /**
-     * @var \Marca
-     *
-     * @ORM\ManyToOne(targetEntity="Marca")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="marca_id", referencedColumnName="marca_id" ,nullable=true, onDelete="SET NULL")
-     * })
-     */
-    private $marca;
 
     /**
      * @var \Categoria
      *
      * @ORM\ManyToOne(targetEntity="Categoria")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="categoria_id", referencedColumnName="categoria_id", nullable=true, onDelete="SET NULL")
+     *   @ORM\JoinColumn(name="categoria_id", referencedColumnName="categoria_id")
      * })
      */
     private $categoria;
+
+    /**
+     * @var \Marca
+     *
+     * @ORM\ManyToOne(targetEntity="Marca")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="marca_id", referencedColumnName="marca_id")
+     * })
+     */
+    private $marca;
 
     /**
      * @var \Negocio
      *
      * @ORM\ManyToOne(targetEntity="Negocio")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id", nullable=false)
+     *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id")
      * })
      */
     private $negocio;
-
 
     public function __construct($descripcion, $codigo, $stock, $categoria,$marca, $precioCompra, $aumento,$negocio ){
         $this->descripcion = $descripcion;
@@ -122,18 +120,17 @@ class Producto
         $this->fCreacion = new \DateTime();
         $this->fModificacion = new \DateTime();
     }
-
     public function getProductoId(): ?int
     {
         return $this->productoId;
     }
 
-    public function getCodigo(): ?int
+    public function getCodigo(): ?string
     {
         return $this->codigo;
     }
 
-    public function setCodigo(int $codigo): self
+    public function setCodigo(string $codigo): self
     {
         $this->codigo = $codigo;
 
@@ -164,7 +161,6 @@ class Producto
         return $this;
     }
 
-
     public function getPrecioCompra(): ?float
     {
         return $this->precioCompra;
@@ -189,13 +185,24 @@ class Producto
         return $this;
     }
 
+    public function getFCreacion(): ?\DateTimeInterface
+    {
+        return $this->fCreacion;
+    }
+
+    public function setFCreacion(\DateTimeInterface $fCreacion): self
+    {
+        $this->fCreacion = $fCreacion;
+
+        return $this;
+    }
 
     public function getFModificacion(): ?\DateTimeInterface
     {
         return $this->fModificacion;
     }
 
-    public function setFModificacion(?\DateTimeInterface $fModificacion): self
+    public function setFModificacion(\DateTimeInterface $fModificacion): self
     {
         $this->fModificacion = $fModificacion;
 
@@ -207,9 +214,21 @@ class Producto
         return $this->fHasta;
     }
 
-    public function setFHasta(?\DateTimeInterface $fHasta): self
+    public function setFHasta(\DateTimeInterface $fHasta): self
     {
         $this->fHasta = $fHasta;
+
+        return $this;
+    }
+
+    public function getCategoria(): ?Categoria
+    {
+        return $this->categoria;
+    }
+
+    public function setCategoria(?Categoria $categoria): self
+    {
+        $this->categoria = $categoria;
 
         return $this;
     }
@@ -226,27 +245,17 @@ class Producto
         return $this;
     }
 
-    public function getCategoria(): ?Categoria
-    {
-        return $this->categoria;
-    }
-
-    public function setCategoria(?Categoria $categoria): self
-    {
-        $this->categoria = $categoria;
-
-        return $this;
-    }
     public function getNegocio(): ?Negocio
     {
         return $this->negocio;
     }
 
-    public function getPrecioPublicado(): ?string
+    public function setNegocio(?Negocio $negocio): self
     {
-        return number_format($this->precioCompra + ($this->precioCompra * ($this->aumento/100)), 2, '.', ',');
-    }
+        $this->negocio = $negocio;
 
+        return $this;
+    }
 
 
 }

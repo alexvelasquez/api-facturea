@@ -33,7 +33,7 @@ class NotificacionesController extends RestController
     public function notificacionesUser()
     {
         try{
-            $response = $this->manager()->getRepository("App:Notificacion")->findOneBy(['user'=>$this->getUser(),'leido'=>'N']);
+            $response = $this->manager()->getRepository("App:Notificacion")->findOneBy(['usuario'=>$this->getUser(),'leido'=>'N']);
             if(!empty($response)){
               $response->setLeido('S');
               $this->manager()->flush();

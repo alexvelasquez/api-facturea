@@ -5,12 +5,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * TipoAliCuota
+ * TipoAlicuota
  *
  * @ORM\Table(name="tipo_alicuota")
  * @ORM\Entity
  */
-class TipoAliCuota
+class TipoAlicuota
 {
     /**
      * @var int
@@ -22,7 +22,7 @@ class TipoAliCuota
     private $tipoAlicuotaId;
 
     /**
-     * @var string|null
+     * @var int
      *
      * @ORM\Column(name="afip_id", type="integer", nullable=false)
      */
@@ -31,48 +31,34 @@ class TipoAliCuota
     /**
      * @var float
      *
-     * @ORM\Column(name="valor", type="float", precision=10, scale=0, nullable=true)
+     * @ORM\Column(name="valor", type="float", precision=10, scale=0, nullable=false)
      */
     private $valor;
 
     /**
-     * @var string|null
+     * @var string
      *
-     * @ORM\Column(name="descripcion", type="string", length=255, nullable=false)
+     * @ORM\Column(name="descripcion", type="string", length=128, nullable=false)
      */
     private $descripcion;
 
-
-
     public function __construct($afipId,$descripcion){
-      $this->afipId=$afipId;
-      $this->descripcion = $descripcion;
-    }
-
+        $this->afipId=$afipId;
+        $this->descripcion = $descripcion;
+      }
     public function getTipoAlicuotaId(): ?int
     {
         return $this->tipoAlicuotaId;
     }
+
     public function getAfipId(): ?int
     {
         return $this->afipId;
     }
 
-    public function setAfipId(?string $afipId): self
+    public function setAfipId(int $afipId): self
     {
         $this->afipId = $afipId;
-
-        return $this;
-    }
-
-    public function getDescripcion(): ?string
-    {
-        return $this->descripcion;
-    }
-
-    public function setDescripcion(?string $descripcion): self
-    {
-        $this->descripcion = $descripcion;
 
         return $this;
     }
@@ -88,4 +74,18 @@ class TipoAliCuota
 
         return $this;
     }
+
+    public function getDescripcion(): ?string
+    {
+        return $this->descripcion;
+    }
+
+    public function setDescripcion(string $descripcion): self
+    {
+        $this->descripcion = $descripcion;
+
+        return $this;
+    }
+
+
 }

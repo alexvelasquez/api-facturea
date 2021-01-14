@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Negocio
  *
- * @ORM\Table(name="negocio")
+ * @ORM\Table(name="negocio", indexes={@ORM\Index(name="condicion_iva_id", columns={"condicion_iva_id"}), @ORM\Index(name="localidad_id", columns={"localidad_id"})})
  * @ORM\Entity
  */
 class Negocio
@@ -43,28 +43,28 @@ class Negocio
     private $direccion;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     private $email;
 
     /**
-     * @var int|null
+     * @var string|null
      *
-     * @ORM\Column(name="telefono", type="string", nullable=true)
+     * @ORM\Column(name="telefono", type="string", length=255, nullable=true)
      */
     private $telefono;
 
     /**
-     * @var int|null
+     * @var string|null
      *
      * @ORM\Column(name="cuit_cuil", type="string", length=255, nullable=true)
      */
     private $cuitCuil;
 
     /**
-     * @var int|null
+     * @var string|null
      *
      * @ORM\Column(name="iibb", type="string", length=255, nullable=true)
      */
@@ -77,9 +77,8 @@ class Negocio
      */
     private $inicioActividad;
 
-
     /**
-     * @var int|null
+     * @var string|null
      *
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
      */
@@ -88,24 +87,28 @@ class Negocio
     /**
      * @var int|null
      *
-     * @ORM\Column(name="punto_vta", type="integer", length=5, nullable=true)
+     * @ORM\Column(name="punto_vta", type="integer", nullable=true)
      */
     private $puntoVta;
 
     /**
-     * @var \Localidad
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="Localidad", fetch="EAGER")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="localidad_id", referencedColumnName="localidad_id")
-     * })
+     * @ORM\Column(name="factura_electronica", type="string", length=1, nullable=false)
      */
-    private $localidad;
+    private $facturaElectronica;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="pedido", type="string", length=1, nullable=false)
+     */
+    private $pedido;
 
     /**
      * @var \CondicionIva
      *
-     * @ORM\ManyToOne(targetEntity="CondicionIva", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="CondicionIva")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="condicion_iva_id", referencedColumnName="condicion_iva_id")
      * })
@@ -113,24 +116,20 @@ class Negocio
     private $condicionIva;
 
     /**
-     * @var string
+     * @var \Localidad
      *
-     * @ORM\Column(name="factura_electronica", type="string", length=1, nullable=true)
+     * @ORM\ManyToOne(targetEntity="Localidad")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="localidad_id", referencedColumnName="localidad_id")
+     * })
      */
-    private $facturaElectronica;
+    private $localidad;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="pedido_producto", type="string", length=1, nullable=true)
-     */
-    private $pedidoProducto;
-
+    
     public function __construct(){
-      $this->facturaElectronica = 'N';
-      $this->pedidoProducto = 'N';
-    }
-
+        $this->facturaElectronica = 'N';
+        $this->pedido = 'N';
+      }
     public function getNegocioId(): ?int
     {
         return $this->negocioId;
@@ -150,7 +149,7 @@ class Negocio
 
     public function getNombreFantasia(): ?string
     {
-        return $this->$nombreFantasia;
+        return $this->nombreFantasia;
     }
 
     public function setNombreFantasia(?string $nombreFantasia): self
@@ -159,6 +158,7 @@ class Negocio
 
         return $this;
     }
+
     public function getDireccion(): ?string
     {
         return $this->direccion;
@@ -171,61 +171,48 @@ class Negocio
         return $this;
     }
 
-    public function getTelefono(): ?int
-    {
-        return $this->telefono;
-    }
-
-    public function setTelefono(?int $telefono): self
-    {
-        $this->telefono = $telefono;
-
-        return $this;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 
         return $this;
     }
 
-    public function getLogo()
+    public function getTelefono(): ?string
     {
-        return $this->logo;
+        return $this->telefono;
     }
 
-    public function setLogo($logo): self
+    public function setTelefono(?string $telefono): self
     {
-        $this->logo = $logo;
+        $this->telefono = $telefono;
 
         return $this;
     }
 
-    public function getCuitCuil(): ?int
+    public function getCuitCuil(): ?string
     {
         return $this->cuitCuil;
     }
 
-    public function setCuitCuil(?int $cuitCuil): self
+    public function setCuitCuil(?string $cuitCuil): self
     {
         $this->cuitCuil = $cuitCuil;
 
         return $this;
     }
 
-
-    public function getIibb(): ?int
+    public function getIibb(): ?string
     {
         return $this->iibb;
     }
 
-    public function setIibb(?int $iibb): self
+    public function setIibb(?string $iibb): self
     {
         $this->iibb = $iibb;
 
@@ -244,6 +231,18 @@ class Negocio
         return $this;
     }
 
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): self
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
     public function getPuntoVta(): ?int
     {
         return $this->puntoVta;
@@ -256,18 +255,43 @@ class Negocio
         return $this;
     }
 
+    public function getFacturaElectronica(): ?string
+    {
+        return $this->facturaElectronica;
+    }
+    
     public function getPtoVtaFactura()
     {
         return str_pad($this->puntoVta, 5, "0", STR_PAD_LEFT);
     }
+
+    public function setFacturaElectronica(string $facturaElectronica): self
+    {
+        $this->facturaElectronica = $facturaElectronica;
+
+        return $this;
+    }
+
+    public function getPedido(): ?string
+    {
+        return $this->pedido;
+    }
+
+    public function setPedido(string $pedido): self
+    {
+        $this->pedido = $pedido;
+
+        return $this;
+    }
+
     public function getCondicionIva(): ?CondicionIva
     {
         return $this->condicionIva;
     }
 
-    public function setCondicionIva(?CondicionIva $condIva): self
+    public function setCondicionIva(?CondicionIva $condicionIva): self
     {
-        $this->condicionIva = $condIva;
+        $this->condicionIva = $condicionIva;
 
         return $this;
     }
@@ -277,36 +301,12 @@ class Negocio
         return $this->localidad;
     }
 
-    public function setLocalidad(Localidad $localidad): self
+    public function setLocalidad(?Localidad $localidad): self
     {
         $this->localidad = $localidad;
 
         return $this;
     }
 
-
-    public function getFacturaElectronica()
-    {
-        return $this->facturaElectronica;
-    }
-
-    public function setFacturaElectronica($facturaElectronica)
-    {
-        $this->facturaElectronica = $facturaElectronica;
-
-        return $this;
-    }
-
-    public function getPedidoProductos()
-    {
-        return $this->pedidoProducto;
-    }
-
-    public function setPedidoProductos($pedidoProducto)
-    {
-        $this->pedidoProducto = $pedidoProducto;
-
-        return $this;
-    }
 
 }

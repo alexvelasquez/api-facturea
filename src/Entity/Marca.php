@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Marca
  *
- * @ORM\Table(name="marca")
+ * @ORM\Table(name="marca", indexes={@ORM\Index(name="negocio_id", columns={"negocio_id"})})
  * @ORM\Entity
  */
 class Marca
@@ -22,7 +22,7 @@ class Marca
     private $marcaId;
 
     /**
-     * @var string
+     * @var int
      *
      * @ORM\Column(name="codigo", type="integer", nullable=false)
      */
@@ -40,18 +40,16 @@ class Marca
      *
      * @ORM\ManyToOne(targetEntity="Negocio")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id", nullable=false)
+     *   @ORM\JoinColumn(name="negocio_id", referencedColumnName="negocio_id")
      * })
      */
     private $negocio;
-
 
     public function __construct($descripcion,$codigo,$negocio){
         $this->descripcion = $descripcion;
         $this->codigo = $codigo;
         $this->negocio = $negocio;
     }
-
     public function getMarcaId(): ?int
     {
         return $this->marcaId;
@@ -68,6 +66,18 @@ class Marca
 
         return $this;
     }
+    public function getCodigo(): ?int
+    {
+        return $this->codigo;
+    }
+
+    public function setCodigo(int $codigo): self
+    {
+        $this->codigo = $codigo;
+
+        return $this;
+    }
+
     public function getNegocio(): ?Negocio
     {
         return $this->negocio;

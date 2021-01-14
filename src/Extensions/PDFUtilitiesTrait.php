@@ -14,7 +14,7 @@ use Picqer\Barcode\BarcodeGeneratorHTML;
 trait PDFUtilitiesTrait
 {
 
-  private function generarPdf($url,$datos){
+  private function obtenerPDF($url,$datos){
     /* pdf/factura.html.twig**/
     $html = $this->renderView($url,$datos);
     $options = new Options();
@@ -22,10 +22,11 @@ trait PDFUtilitiesTrait
     $options->setIsHtml5ParserEnabled(true);
     $dompdf = new Dompdf($options);
     $dompdf->loadHtml($html);
-    $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
     // Output the generated PDF to Browser
-    //$dompdf->stream();
+    // $dompdf->stream("mypdf.pdf", [
+    //         "Attachment" => false
+    // ]);
     return base64_encode($dompdf->output());
   }
 

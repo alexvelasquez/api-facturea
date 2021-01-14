@@ -52,6 +52,7 @@ class LoginController extends RestController
      * @SWG\Parameter(name="username",in="body",type="string",description="The username",schema={})
      * @SWG\Parameter(name="password",in="query",type="string",description="The password")
      * @SWG\Parameter(name="administrador",in="query",type="string",description="The password")
+     * 
      * @SWG\Tag(name="User")
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $encoder) {

@@ -11,12 +11,10 @@
     }
     /* TABLE HEADER */
     .table-header td, .table-header th {
-      border: 1px solid #dddddd;
       padding: 8px;
     }
 
     .table-header tr th{
-      border: 1px solid #dddddd;
       width:5%;
       font-size: 25px
       border: 1px solid;
@@ -41,12 +39,15 @@
     {# HEADER TITLE : ORIGINAL O DUPLICADO #}
     <table class="table-header">
       <tr>
-        <th>PEDIDO: {{preventa.getCliente.getRazonSocial}}</th>
+        <th style="text-align:center"><img src="{{absolute_url(asset('build/images/logo.png'))}}"></img><p style="font-size:12px">www.facturea.com.ar</p></th>
+        <th style="text-align:center">PEDIDO</th>
+        <th style="text-align:center"><span style="font-size:15px">{{venta.getFVenta | date('d/m/Y')}}</span> <br>
+            <span style="font-size:12px">CLIENTE: {{venta.getCliente.getRazonSocial}}</span>
+        </th>
       </tr>
     </table>
 
     {# LISTADO PRODUCTOS #}
-    {# INFO DATOS EMISOR #}
     {#  background-color: #dddddd; #}
     <table class="table-productos" style="margin-top:2px">
       <tr class="cabecera">
