@@ -2,7 +2,6 @@
   "type": "project",
   "license": "proprietary",
   "require": {
-    "ext-soap": "*",
     "ext-ctype": "*",
     "ext-iconv": "*",
     "php": "^7.1.3",
