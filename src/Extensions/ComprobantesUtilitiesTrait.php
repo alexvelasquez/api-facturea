@@ -7,8 +7,10 @@ use Dompdf\Options;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Picqer\Barcode\BarcodeGeneratorPNG;
-use App\Entity\Preventa;
-use App\Entity\ComprobantePreventa;
+use App\Entity\Venta;
+use App\Entity\Comprobante;
+use App\Entity\EstadoVenta;
+use App\Entity\Movimiento;
 
 /**
  * Este trait incluye los metodos para procesar archivos
@@ -16,58 +18,74 @@ use App\Entity\ComprobantePreventa;
 trait ComprobantesUtilitiesTrait
 {
   /** Metodo que almacena los datos relacionados a la factura */
-  private function registrarDatosComprobante($paramFetcher,$tipoComprobante,$afip){
+  private function registrarDatosComprobante($paramFetcher,$tipoComprobante,$afip = null){
     /** verifico si es recibo y obtengo el numero del recibo**/
     $ptoVta = $paramFetcher->get('cliente')['negocio']['punto_vta'];
     $tipoRecibo = ($tipoComprobante->getAfipId() == $this->getParameter('recibo'));
-    if($tipoRecibo){
-      $ultimoRecibo = count($this->manager()->getRepository("App:ComprobantePreventa")->findBy(['tipoComprobante'=>$tipoComprobante]));
-      $nroComprobante = $ultimoRecibo;
+    if(!$tipoRecibo){
+      $numeroComprobante = ($this->obtenerUltimoComprobante($afip,$ptoVta,$tipoComprobante->getAfipId()))+1;
     }
     else{
-      $nroComprobante = $this->obtenerUltimoComprobante($afip, $ptoVta, $tipoComprobante->getAfipId()) + 1;
-    }
+      $ultimoRecibo = $this->manager()->getRepository("App:Comprobante")->findOneBy(['tipoComprobante'=>$tipoComprobante],['numero'=>'DESC']);
+      $numeroComprobante = empty($ultimoRecibo) ? 1 : ((int) $ultimoRecibo->getNumero() + 1);
+    } 
 
-    /** Preventa*/
+    /** Venta*/
+    $remito = $paramFetcher->get('remito') ?? null;
     $fechaEmision = $paramFetcher->get('fecha_emision');
     $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente')['cliente_id']);
-    $tipoPreventa = $this->manager()->getRepository("App:TipoPreventa")->find($this->getParameter('tipo_preventa_comprobante'));//Comprobante
-    $preventa = new Preventa($cliente,$tipoPreventa,$fechaEmision);
-    $this->manager()->persist($preventa);
+    $tipoVenta = $this->manager()->getRepository("App:TipoVenta")->find($this->getParameter('tipo_venta_comprobante'));//Comprobante
+    $venta = new Venta($cliente,$tipoVenta,$fechaEmision);
+    $this->manager()->persist($venta);
 
-    /** Productos Preventas **/
-    $productos = $paramFetcher->get('productos');
-    $this->manager()->getRepository("App:ProductoPreventa")->generarProductosPreventas($productos,$preventa);
-
-    /** Comprobante Preventa*/
+    /** Estado Venta */
     $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));
-    $estadoComprobante = $this->getParameter('estado_pagado'); //por defecto pagado.
-    if($tipoRecibo && $condicionVenta->getCondicionVentaId() == $this->getParameter('cuenta_corriente')){ //verico si es un recibo y se aplica a cuenta corriente..
-      $estadoComprobante = $this->getParameter('estado_pendiente_pago'); // cambio el estado a pendiente de pago
-      $preventa->setMontoDebido($paramFetcher->get('importes')['total']); // seteo el monto debido de la compra
+    if($tipoRecibo && ($condicionVenta->getCondicionVentaId() == $this->getParameter('condicion_cuenta_corriente'))){ //verico si es un recibo y se aplica a cuenta corriente..
+      $estado = $this->manager()->getRepository("App:Estado")->findOneBy(['codigo'=>'PENDIENTE']); //obtengo el estado pendiente
+      $estadoVenta = new EstadoVenta($venta,$estado);
+
+      /** agrego movimiento cuenta corriente */
+      $cuentaCorriente = $cliente->getCuentaCorriente();
+      $valor = $paramFetcher->get('importes')['total'];
+
+      $montoCuentaCorriente = $cuentaCorriente->getMonto();
+      $cuentaCorriente->setMonto($montoCuentaCorriente + (float)$valor);
+      $movimiento = new Movimiento($cuentaCorriente,$valor);
+      $this->manager()->persist($cuentaCorriente);
+      $this->manager()->persist($movimiento);
     }
-    $estadoComprobante =  $this->manager()->getRepository("App:Estado")->find($estadoComprobante);
-    $comprobantePreventa = new ComprobantePreventa($preventa,$estadoComprobante,$tipoComprobante,$condicionVenta,$nroComprobante,$ptoVta);
-    $this->manager()->persist($comprobantePreventa);
-    return $comprobantePreventa;
+    else{
+      $estado = $this->manager()->getRepository("App:Estado")->findOneBy(['codigo'=>'PAGADO']); //obtengo el estado pendiente
+      $estadoVenta = new EstadoVenta($venta,$estado);
+      $this->manager()->persist($estadoVenta);
+    }
+
+    /** Productos Ventas **/
+    $productos = $paramFetcher->get('productos');
+    $this->manager()->getRepository("App:ProductoVenta")->generarProductosVentas($productos,$venta);
+
+    /** Comprobante*/
+    $comprobante = new Comprobante($condicionVenta,$venta,$tipoComprobante,$numeroComprobante,$ptoVta,$remito);
+    $this->manager()->persist($comprobante);
+    return $comprobante;
   }
 
 /** Parametros para la generacion del PDF**/
-  private function parametrosComprobantePDF($paramFetcher,$data,$tipoComprobante,$comprobantePreventa,$cae=null){
+  private function parametrosComprobantePDF($paramFetcher,$data,$tipoComprobante,$comprobante,$cae=null){
     // dd($cae);
     $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente')['cliente_id']);
     $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));
     $data['cliente'] = $cliente;
     $data['productos'] =$paramFetcher->get('productos');
     $data['CbteTipo'] = $tipoComprobante;
-    $data['compPrev'] = $comprobantePreventa;
-    $data['CbteFch'] 	= intval(date('Ymd',strtotime($paramFetcher->get('fecha_emision'))));
+    $data['comp'] = $comprobante;
+    $data['CbteFch'] 	= new \DateTime($paramFetcher->get('fecha_emision'));
     $data['ImpNeto'] = $paramFetcher->get('importes')['gravado'];
     $data['ImpTotal'] = $paramFetcher->get('importes')['total'];
     $data['CondVta'] = $condicionVenta;
     $data['Iva'] = [];
     if($tipoComprobante->getAfipId() == 1){
-      $alicuotas = $this->obtenerAliCuotasTotales($productos,$paramFetcher->get('importes')['gravado']);
+      $alicuotas = $this->obtenerAliCuotasTotales($data['productos'],$paramFetcher->get('importes')['gravado']);
       $data['Iva'] = array_values($alicuotas);
     }
     if($tipoComprobante->getAfipId() != $this->getParameter('recibo')){
@@ -80,6 +98,7 @@ trait ComprobantesUtilitiesTrait
       $data['codigo'] = $codigo;
       $data['codigoBarras'] = $codigoBarras;
     }
+    // dump($data);
     return $data;
   }
 }

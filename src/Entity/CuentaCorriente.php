@@ -24,26 +24,38 @@ class CuentaCorriente
     /**
      * @var float
      *
-     * @ORM\Column(name="monto", type="float", precision=10, scale=0, nullable=false)
+     * @ORM\Column(name="monto", type="float", precision=10, scale=0, nullable=true)
      */
     private $monto;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="f_modificacion", type="datetime", nullable=false)
+     * @ORM\Column(name="f_modificacion", type="datetime", nullable=true)
      */
     private $fModificacion;
 
     /**
      * @var \Cliente
      *
-     * @ORM\ManyToOne(targetEntity="Cliente")
+     * @ORM\ManyToOne(targetEntity="Cliente", inversedBy="cuentaCorriente")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="cliente_id", referencedColumnName="cliente_id")
+     *   @ORM\JoinColumn(name="cliente_id", referencedColumnName="cliente_id", nullable=false)
      * })
      */
     private $cliente;
+
+    /**
+     * One product has many movimientos. This is the inverse side.
+     * @ORM\OneToMany(targetEntity="Movimiento", mappedBy="cuentaCorriente")
+     */
+    private $movimientos;
+
+
+    public function __construct($cliente)
+    {
+        return $this->cliente = $cliente; 
+    }
 
     public function getCuentaCorrienteId(): ?int
     {

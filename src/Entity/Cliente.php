@@ -118,6 +118,13 @@ class Cliente
      * })
      */
     private $tipoDocumento;
+
+    /**
+     * One Customer has One Cart.
+     * @ORM\OneToOne(targetEntity="CuentaCorriente", mappedBy="cliente")
+     */
+    private $cuentaCorriente;
+
     public function __construct($razonSocial, $email, $localidad, $direccion, $telefono,$tipoDoc, $documento,$condIva, $negocio ){
         $this->razonSocial = $razonSocial;
         $this->email = $email;
@@ -279,6 +286,9 @@ class Cliente
 
         return $this;
     }
-
+    public function getCuentaCorriente(): ?CuentaCorriente
+    {
+        return $this->cuentaCorriente;
+    }
 
 }

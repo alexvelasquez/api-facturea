@@ -90,6 +90,7 @@ class AfipRestController extends RestController
     */
    public function tiposComprobantesPorIVA(ParamFetcher $paramFetcher)
    {
+    // return $this->apiResponse($paramFetcher->get('afip_id'),200);
         $condicionIva = $paramFetcher->get('afip_id');
         if(!empty($condicionIva) && $condicionIva == $this->getParameter('responsable_inscripto')){
             $comprobantes[] = $this->getParameter('factura_A'); 
@@ -98,7 +99,9 @@ class AfipRestController extends RestController
         elseif(!empty($condicionIva)){
             $comprobantes[] =  $this->getParameter('factura_C');
         }
-        $comprobantes[] =  $this->getParameter('recibo');
+        else{
+            $comprobantes[] =  $this->getParameter('recibo');
+        }
         $tiposComprobantes =  $this->manager()->getRepository("App:TipoComprobante")->tiposComprobantesIva($comprobantes);
         return $this->apiResponse($tiposComprobantes,200);
    }
@@ -223,6 +226,7 @@ class AfipRestController extends RestController
      * @Rest\RequestParam(name="fecha_desde",nullable=true)
      * @Rest\RequestParam(name="fecha_hasta",nullable=true)
      * @Rest\RequestParam(name="fecha_vto",nullable=true)
+     * @Rest\RequestParam(name="remito",nullable=true)
      * @Rest\RequestParam(name="productos",nullable=false)
      * @Rest\RequestParam(name="condicion_vta",nullable=false)
      * @Rest\RequestParam(name="importes",nullable=false)
@@ -237,11 +241,10 @@ class AfipRestController extends RestController
            $this->manager()->getConnection()->beginTransaction();
            $ptoVta = $this->getUser()->getNegocio()->getPuntoVta();
            $tipoComprobante = $this->manager()->getRepository("App:TipoComprobante")->findOneBy(['afipId'=>$paramFetcher->get('comprobante')]);
-           $comprobantePreventa = $this->registrarDatosComprobante($paramFetcher,$tipoComprobante,$afip);
+           $comprobante = $this->registrarDatosComprobante($paramFetcher,$tipoComprobante,$afip);
            /** obtengo los datos para el comprobante */
-           $data = $this->parametrosComprobanteAfip($paramFetcher,$tipoComprobante,$comprobantePreventa->getNumero());
-
-
+           $data = $this->parametrosComprobanteAfip($paramFetcher,$tipoComprobante,$comprobante->getNumero());
+           
            if($tipoComprobante->getAfipId() != $this->getParameter('recibo')){
              /**Creo el comprobante en AFIP */
              $response = $afip->getWS()->ElectronicBilling->CreateVoucher($data);
@@ -251,17 +254,14 @@ class AfipRestController extends RestController
                throw new Exception('La factura no se generó, debido a un problema en AFIP');
              }
            }
-           // dd($response);
            /** genero el pdf con los datos guardados **/
-           $data = $this->parametrosComprobantePDF($paramFetcher,$data,$tipoComprobante,$comprobantePreventa,$response ?? NULL);//true por el cpodigo de barras
-           $pdfData = $this->generarPdf('pdf/comprobante.html.twig',$data);
+           $data = $this->parametrosComprobantePDF($paramFetcher,$data,$tipoComprobante,$comprobante,$response ?? NULL);//true por el cpodigo de barras
+           $pdfData = $this->obtenerPDF('pdf/comprobante.html.twig',$data);
            $response =  array('file' => "data:application/pdf;base64,".$pdfData);
-
            /** persisto los datos*/
            $this->manager()->flush();
            $this->manager()->getConnection()->commit();
            return $this->apiResponse($response,200);
-
          } catch (\Exception $e) {
              $this->manager()->getConnection()->rollback();
              return $this->apiResponse(['data'=>$e->getMessage()],500);

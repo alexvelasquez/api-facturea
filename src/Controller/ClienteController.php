@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Cliente;
+use App\Entity\CuentaCorriente;
 use App\Entity\Negocio;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -25,14 +26,15 @@ class ClienteController extends RestController
     use PDFUtilitiesTrait;
     use MailUtilitiesTrait;
      /**
-     * @Rest\Get("/negocio/{negocio}", name="lista_cliente", defaults={"_format":"json"})
+     * @Rest\Get("", name="lista_cliente", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Devuelve todas los clientes de un negocio.")
      * @SWG\Response(response=500,description="Hubo un problema para recuperar los clientes de un negocio")
      * @SWG\Tag(name="Cliente")
      */
-    public function clientesNegocio( Negocio $negocio)
+    public function clientesNegocio()
     {
         try{
+            $negocio = $this->getUser()->getNegocio();
             $response = $this->manager()->getRepository("App:Cliente")->findBy(['negocio'=>$negocio,'fHasta'=> NULL],['razonSocial'=>'ASC']);
             //$response = $this->manager()->getRepository("App:Cliente")->clientesNegocio($negocio);
             return $this->apiResponse($response,200);
@@ -42,7 +44,7 @@ class ClienteController extends RestController
     }
 
     /**
-     * @Rest\Post("/negocio/{negocio}/nuevo", name="nuevo_cliente", defaults={"_format":"json"})
+     * @Rest\Post("/nuevo", name="nuevo_cliente", defaults={"_format":"json"})
      * @Rest\RequestParam(name="razon_social",nullable=false)
      * @Rest\RequestParam(name="email",nullable=true)
      * @Rest\RequestParam(name="localidad",nullable=false)
@@ -64,10 +66,13 @@ class ClienteController extends RestController
      * @SWG\Parameter(name="condIva",in="body",type="string",description="condIva del cliente",schema={})
      * @SWG\Tag(name="Cliente")
      */
-    public function nuevoCliente(ParamFetcher $paramFetcher, Negocio $negocio)
+    public function nuevoCliente(ParamFetcher $paramFetcher)
     {
         try {
             $errores = [];
+
+            /** ALTA DE CLIENTE */
+            $negocio = $this->getUser()->getNegocio();
             $razonSocial = $paramFetcher->get('razon_social');
             $email  = $paramFetcher->get('email');
             $localidad  = $paramFetcher->get('localidad')['localidad_id'];
@@ -82,8 +87,11 @@ class ClienteController extends RestController
             $condicionIva = $this->manager()->getRepository("App:CondicionIva")->find($condicionIva);
 
             $cliente = new Cliente($razonSocial,$email,$localidad,$direccion,$telefono,$tipoDocumento,$documento,$condicionIva,$negocio);
-
             $this->manager()->persist($cliente);
+
+            /** ALTA DE CUENTA CORRIENTE DE ESE CLIENTE */
+            $cuentaCorriente = new CuentaCorriente($cliente);
+            $this->manager()->persist($cuentaCorriente);
             $this->manager()->flush();
 
             return $this->apiResponse($cliente,201);
@@ -209,7 +217,22 @@ class ClienteController extends RestController
         }
     }
 
-
+        /**
+     * @Rest\Get("/cuentaCorriente/{cliente}", name="cuenta_corriente_cliente", defaults={"_format":"json"})
+     * @SWG\Response(response=200,description="Cuenta corriente cliente.")
+     * @SWG\Response(response=400,description="Error en los parametros")
+     * @SWG\Response(response=500,description="Error en el servidor")
+     * @SWG\Tag(name="Cliente")
+     */
+    public function cuentaCorriente(Cliente $cliente)
+    {
+        try{
+            $response = $this->manager()->getRepository("App:CuentaCorriente")->findOneBy(['cliente'=>$cliente],['fModificacion'=>'DESC']);
+            return $this->apiResponse($response,200);
+        } catch (Exception $e) {
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
 
 
 

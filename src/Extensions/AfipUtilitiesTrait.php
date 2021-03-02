@@ -58,7 +58,7 @@ trait AfipUtilitiesTrait
       'MonCotiz' 	=> 1,     // Cotización de la moneda usada (1 para pesos argentinos)
     );
     if($tipoComprobante->getAfipId() == 1){
-        $alicuotas = $this->obtenerAliCuotasTotales($productos,$paramFetcher->get('importes')['gravado']);
+        $alicuotas = $this->obtenerAliCuotasTotales($paramFetcher->get('productos'),$paramFetcher->get('importes')['gravado']);
         $data['Iva'] = array_values($alicuotas);
     }
     return $data;

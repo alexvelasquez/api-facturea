@@ -38,7 +38,7 @@ class Comprobante
     /**
      * @var string
      *
-     * @ORM\Column(name="remito", type="string", length=255, nullable=false)
+     * @ORM\Column(name="remito", type="string", length=255, nullable=true)
      */
     private $remito;
 
@@ -71,6 +71,16 @@ class Comprobante
      * })
      */
     private $venta;
+
+    public function __construct($condicionVenta,$venta,$tipoComprobante,$numero,$ptoVenta,$remito)
+    {   
+        $this->condicionVenta = $condicionVenta;
+        $this->venta = $venta;
+        $this->tipoComprobante = $tipoComprobante;
+        $this->numero = $numero;
+        $this->puntoVenta=$ptoVenta;
+        $this->remito = $remito;   
+    }
 
     public function getComprobanteId(): ?int
     {

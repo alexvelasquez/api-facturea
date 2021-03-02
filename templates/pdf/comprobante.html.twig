@@ -177,8 +177,8 @@
         {% if not recibo %}
           <span style="font-size:13px; font-weight: bold;">Punto de Venta:</span><span style="font-size:12px"> {{cliente.getNegocio().getPtoVtaFactura()}}</span>
         {% endif %}
-          <span style="font-size:13px; font-weight: bold;">Comp. Nro:</span><span style="font-size:12px"> {{compPrev.getNumeroFactura()}}</span><br>
-          <span style="font-size:13px; font-weight: bold;">Fecha de Emisión:</span><span style="font-size:12px"> {{CbteFch | date('d/m/Y')}}</span><br><br>
+          <span style="font-size:13px; font-weight: bold;">Comp. Nro:</span><span style="font-size:12px"> {{comp.getNumero()}}</span><br>
+          <span style="font-size:13px; font-weight: bold;">Fecha de Emisión:</span><span style="font-size:12px"> -- </span><br><br>
           <span style="font-size:13px; font-weight: bold;">CUIT:</span><span style="font-size:12px;"> {{cliente.getNegocio().getCuitCuil()}}</span><br>
           <span style="font-size:13px; font-weight: bold;">Ingresos Brutos:</span><span style="font-size:12px;"> {{cliente.getNegocio().getIibb() ?? '-'}}</span><br>
           <span style="font-size:13px; font-weight: bold;">Fecha de Inicio de Actividades:</span><span style="font-size:12px;"> {{cliente.getNegocio().getInicioActividad() ?  cliente.getNegocio().getInicioActividad() | date('d/m/Y') : '-'}}</span>
@@ -287,7 +287,7 @@
         <div style="margin-top:1px">
             <table >
               <tr>
-                  <td style="width:33%;  text-align: left;"><img src="{{path_public}}/build/logo_afip.png" ><br>
+                  <td style="width:33%;  text-align: left;"><img src="{{ path_public ~ '/build/images/afip.png'}}"><br>
                   <img src="{{codigoBarras}}" width="120%" height="12%"><br>
                   <p style="font-size:12px; margin-left:40px; margin-top:0">{{codigo}}</p>
                   </td>

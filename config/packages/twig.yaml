@@ -5,6 +5,6 @@ twig:
     exception_controller: null
 
     globals:
-        path_public: '%env(twig_url)%'
+        path_public: '%env(PUBLIC_URL)%'
         responsable_inscripto: 1
         recibo: 99

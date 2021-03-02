@@ -14,17 +14,13 @@ class TipoComprobanteRepository extends EntityRepository
       $qb = $em->createQueryBuilder();
       $whereCondicion = '(';
       foreach ($comprobantes as $key=>$value) {
-        $whereCondicion .= $value;
-        if($key < count($comprobantes) -1){
-          $whereCondicion .= ',';
-        }
+        $whereCondicion .= "{$value},";
       }
-      $whereCondicion .= ')';
-
+      $whereCondicion = trim($whereCondicion,',').')';
       $qb->select('tc')
           ->from('App:TipoComprobante', 'tc');
         /** usuario no inscrito en la AFIP*/
-      $qb->where($whereCondicion);
+      $qb->where("tc.afipId IN {$whereCondicion}");
       return $qb->getQuery()->getArrayResult();
     }
 }
