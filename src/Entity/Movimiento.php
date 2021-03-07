@@ -62,11 +62,12 @@ class Movimiento
      */
     private $tipoMovimiento;
 
-    public function __construct($cuentaCorriente,$valor,$observacion=null)
+    public function __construct($cuentaCorriente,$valor,$tipoMovimiento,$observacion=null)
     {
         $this->cuentaCorriente = $cuentaCorriente;
         $this->fCreacion = new \DateTime();
         $this->valor = $valor;
+        $this->tipoMovimiento = $tipoMovimiento;
         $this->observacion = $observacion;
     }
 

@@ -48,6 +48,7 @@ class CuentaCorriente
     /**
      * One product has many movimientos. This is the inverse side.
      * @ORM\OneToMany(targetEntity="Movimiento", mappedBy="cuentaCorriente")
+     * @ORM\OrderBy({"fCreacion" = "DESC"})
      */
     private $movimientos;
 
@@ -98,5 +99,10 @@ class CuentaCorriente
         return $this;
     }
 
-
+    public function abonar($monto,$movimiento): self
+    {
+        $this->monto = $this->monto - (float)$monto;
+        $this->movimientos[]=$movimiento;
+        return $this;
+    }
 }

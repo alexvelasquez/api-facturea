@@ -50,7 +50,8 @@ trait ComprobantesUtilitiesTrait
 
       $montoCuentaCorriente = $cuentaCorriente->getMonto();
       $cuentaCorriente->setMonto($montoCuentaCorriente + (float)$valor);
-      $movimiento = new Movimiento($cuentaCorriente,$valor);
+      $tipoMovimiento = $this->manager()->getRepository('App:TipoMovimiento')->findOneBy(['codigo'=>'AUMENTO']);
+      $movimiento = new Movimiento($cuentaCorriente,$valor,$tipoMovimiento);
       $this->manager()->persist($cuentaCorriente);
       $this->manager()->persist($movimiento);
     }

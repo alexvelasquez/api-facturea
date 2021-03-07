@@ -80,7 +80,7 @@ class Venta
     {
         $this->cliente=$cliente;
         $this->tipoVenta = $tipoVenta;
-        $this->fVenta = new \Datetime($fVenta);
+        $this->fVenta = $fVenta;
         $this->fCreacion = new \DateTime();
         $this->fModificacion = new \DateTime();
     }
