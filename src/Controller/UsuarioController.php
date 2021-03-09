@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Routing\Annotation\Route;
@@ -86,6 +87,44 @@ class UsuarioController extends RestController
             $user->setPassword($passwordNueva);
             $this->manager()->flush();
             return $this->apiResponse($user,200);
+        } catch (Exception $e) {
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
+
+
+    /**
+     * @Rest\Put("/gestionFacturaElectronica/{usuario}", name="activar_factura", defaults={"_format":"json"})
+     * @Rest\RequestParam(name="valor",nullable=false)
+     * @SWG\Response(response=200,description="Devuelve el usuario con la contraseña actualizada.")
+     * @SWG\Response(response=500,description="Hubo un problema al actualizar la contraseña")
+     * @SWG\Tag(name="Usuario")
+     */
+    public function activarFactura(ParamFetcher $paramFetcher, User $usuario)
+    {
+        try{
+            $valor = $paramFetcher->get('valor');
+            $usuario->getNegocio()->setFacturaElectronica($valor);
+            $this->manager()->flush();
+            return $this->apiResponse($this->getUser(),200);
+        } catch (Exception $e) {
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
+    /**
+     * @Rest\Put("/gestionPedido/{usuario}", name="activar_pedido", defaults={"_format":"json"})
+     * @Rest\RequestParam(name="valor",nullable=false)
+     * @SWG\Response(response=200,description="Devuelve el usuario con la contraseña actualizada.")
+     * @SWG\Response(response=500,description="Hubo un problema al actualizar la contraseña")
+     * @SWG\Tag(name="Usuario")
+     */
+    public function activarPedido(ParamFetcher $paramFetcher, User $usuario)
+    {
+        try{
+            $valor = $paramFetcher->get('valor');
+            $usuario->getNegocio()->setPedido($valor);
+            $this->manager()->flush();
+            return $this->apiResponse($this->getUser(),200);
         } catch (Exception $e) {
             return $this->apiResponse($e->getMessage(),500);
         }
