@@ -32,7 +32,7 @@ trait ComprobantesUtilitiesTrait
 
     /** Venta*/
     $remito = $paramFetcher->get('remito') ?? null;
-    $fechaEmision = $paramFetcher->get('fecha_emision');
+    $fechaEmision = new \Datetime($paramFetcher->get('fecha_emision'));
     $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente')['cliente_id']);
     $tipoVenta = $this->manager()->getRepository("App:TipoVenta")->find($this->getParameter('tipo_venta_comprobante'));//Comprobante
     $venta = new Venta($cliente,$tipoVenta,$fechaEmision);

@@ -5,7 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
      public_directory: '%kernel.project_dir%/public'
-     instructivo_url: '%env(instructivo_url)%'
+     instructivo_url: '%env(INSTRUCTIVO_URL)%'
      recibo: 99
      factura_A: 1
      factura_B: 6

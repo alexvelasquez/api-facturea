@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Comprobante
  *
  * @ORM\Table(name="comprobante", indexes={@ORM\Index(name="venta_id", columns={"venta_id"}), @ORM\Index(name="condicion_venta_id", columns={"condicion_venta_id"}), @ORM\Index(name="tipo_comprobante_id", columns={"tipo_comprobante_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ComprobanteRepository");
  */
 class Comprobante
 {
@@ -31,9 +31,16 @@ class Comprobante
     /**
      * @var int
      *
-     * @ORM\Column(name="punto_venta", type="integer", nullable=false)
+     * @ORM\Column(name="punto_venta", type="integer", nullable=true)
      */
     private $puntoVenta;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="f_emision", type="date", nullable=true)
+     */
+    private $fEmision;
 
     /**
      * @var string
@@ -76,6 +83,7 @@ class Comprobante
     {   
         $this->condicionVenta = $condicionVenta;
         $this->venta = $venta;
+        $this->fEmision = $venta->getFVenta();
         $this->tipoComprobante = $tipoComprobante;
         $this->numero = $numero;
         $this->puntoVenta=$ptoVenta;
@@ -159,5 +167,15 @@ class Comprobante
         return $this;
     }
 
+    public function getFEmision(): ?\DateTimeInterface
+    {
+        return $this->fEmision;
+    }
+
+    public function setFEmision(\DateTimeInterface $fEmision): self
+    {
+        $this->fEmision = $fEmision;
+        return $this;
+    }
 
 }

@@ -35,25 +35,26 @@ class ComprobanteController extends RestController
     use PDFUtilitiesTrait;
 
     /**
-    * @Rest\Get("/negocio/{negocio}", name="lista_comprobantes", defaults={"_format":"json"})
+    * @Rest\Get("", name="lista_comprobantes", defaults={"_format":"json"})
     * @Rest\QueryParam(name="fechaDesde",nullable=false)
     * @Rest\QueryParam(name="fechaHasta",nullable=false)
     * @SWG\Response(response=200,description="Devuelve todos los comprobantes de un negocio.")
     * @SWG\Response(response=500,description="Hubo un problema para recuperar los comprobates de un negocio")
     * @SWG\Tag(name="Marca")
     */
-   public function comprobantes(ParamFetcher $paramFetcher, Negocio $negocio)
+   public function comprobantes(ParamFetcher $paramFetcher)
    {
-    //    try
-    //    {
-    //        $fechaDesde = $paramFetcher->get('fechaDesde').' 00:00:00';
-    //        $fechaHasta = $paramFetcher->get('fechaHasta').' 23:59:59';
-    //        $response = $this->manager()->getRepository("App:ComprobantePreventa")->comprobantes($negocio,$fechaDesde,$fechaHasta);
-    //        return $this->apiResponse($response,200);
-    //    } catch (Exception $e)
-    //    {
-    //        return $this->apiResponse($e->getMessage(),500);
-    //    }
+       try
+       {
+            $negocio = $this->getUser()->getNegocio();
+            $fechaDesde = $paramFetcher->get('fechaDesde');
+            $fechaHasta = $paramFetcher->get('fechaHasta');
+            $response = $this->manager()->getRepository("App:Comprobante")->comprobantesPorFechas($negocio,$fechaDesde,$fechaHasta);
+            return $this->apiResponse($response,200);
+       } catch (Exception $e)
+       {
+           return $this->apiResponse($e->getMessage(),500);
+       }
    }
 
 }

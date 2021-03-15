@@ -36,8 +36,10 @@ class VentaController extends RestController
             $fecha = new \DateTime($paramFetcher->get('fecha'));
 
             /** verifico si en esa fecha ya se encuentra un pedido para ese cliente */
+            $tipoVentaPedido = $this->manager()->getRepository("App:TipoVenta")->findOneBy(['codigo'=>'PEDIDO']);
             $pedidoCliente = $this->manager()->getRepository("App:Venta")->findOneBy(['cliente'=>$cliente,
-                                                                                       'fVenta'=>$fecha]);
+                                                                                      'fVenta'=>$fecha,
+                                                                                      'tipoVenta'=>$tipoVentaPedido]);
             if(!empty($pedidoCliente)) {
               throw new Exception('Ya existe un pedido para el cliente en esa fecha');
             };

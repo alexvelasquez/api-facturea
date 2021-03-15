@@ -31,14 +31,14 @@ class Cliente
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255, nullable=false)
+     * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     private $email;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="direccion", type="string", length=255, nullable=false)
+     * @ORM\Column(name="direccion", type="string", length=255, nullable=true)
      */
     private $direccion;
 
@@ -52,7 +52,7 @@ class Cliente
     /**
      * @var string
      *
-     * @ORM\Column(name="documento", type="string", length=255, nullable=false)
+     * @ORM\Column(name="documento", type="string", length=255, nullable=true)
      */
     private $documento;
 

@@ -217,7 +217,7 @@ class CategoriasController extends RestController
          {
              $categorias = $this->manager()->getRepository("App:Categoria")->findBy(array('negocio'=> $negocio), array('descripcion' => 'ASC'));
              $data = ['titulo'=>'CATEGORIAS','datos'=>$categorias];
-             $pdfData = $this->generarPdf('pdf/marcasCategorias.html.twig',$data);
+             $pdfData = $this->obtenerPDF('pdf/marcasCategorias.html.twig',$data);
              $response =  array('file' => "data:application/pdf;base64,".$pdfData);
              return $this->apiResponse($response,200);
          } catch (Exception $e)
