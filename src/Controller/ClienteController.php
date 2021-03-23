@@ -217,7 +217,24 @@ class ClienteController extends RestController
         }
     }
 
-        /**
+    /**
+     * @Rest\Get("/compras/{cliente}", name="compras_cliente", defaults={"_format":"json"})
+     * @SWG\Response(response=200,description="Cuenta corriente cliente.")
+     * @SWG\Response(response=400,description="Error en los parametros")
+     * @SWG\Response(response=500,description="Error en el servidor")
+     * @SWG\Tag(name="Cliente")
+     */
+    public function compras(Cliente $cliente)
+    {
+        try{
+            $compras = $this->manager()->getRepository("App:Venta")->compras($cliente);
+            return $this->apiResponse($compras,200);
+        } catch (Exception $e) {
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
+
+    /**
      * @Rest\Get("/cuentaCorriente/{cliente}", name="cuenta_corriente_cliente", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Cuenta corriente cliente.")
      * @SWG\Response(response=400,description="Error en los parametros")
@@ -232,8 +249,8 @@ class ClienteController extends RestController
         } catch (Exception $e) {
             return $this->apiResponse($e->getMessage(),500);
         }
+        
     }
-
 
 
 }

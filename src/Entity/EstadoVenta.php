@@ -48,7 +48,7 @@ class EstadoVenta
     /**
      * @var \Venta
      *
-     * @ORM\ManyToOne(targetEntity="Venta", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Venta")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="venta_id", referencedColumnName="venta_id")
      * })

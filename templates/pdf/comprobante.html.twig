@@ -171,21 +171,24 @@
 
           <span style="font-size:13px; font-weight: bold;">Razón Social:</span><span style="font-size:12px"> {{cliente.getNegocio().getRazonSocial()}} </span><br><br>
           <span style="font-size:13px; font-weight: bold;">Domicilio Comercial:</span><span style="font-size:12px"> {{cliente.getNegocio().getDireccion() }} - {{cliente.getNegocio().getLocalidad().getDescripcion()|upper}} , {{cliente.getNegocio().getLocalidad().getProvincia().getDescripcion()}}</span><br>
+          {% if not recibo %}
           <span style="font-size:13px; font-weight: bold;">Condición IVA:</span><span style="font-size:12px; font-weight: bold">  {{cliente.getNegocio().getCondicionIva() ? cliente.getNegocio().getCondicionIva().getDescripcion() : '--'}}</span>
+          {% endif %}
         </td>
         <td class="factura">
         {% if not recibo %}
           <span style="font-size:13px; font-weight: bold;">Punto de Venta:</span><span style="font-size:12px"> {{cliente.getNegocio().getPtoVtaFactura()}}</span>
-        {% endif %}
           <span style="font-size:13px; font-weight: bold;">Comp. Nro:</span><span style="font-size:12px"> {{comp.getNumero()}}</span><br>
-          <span style="font-size:13px; font-weight: bold;">Fecha de Emisión:</span><span style="font-size:12px"> -- </span><br><br>
-          <span style="font-size:13px; font-weight: bold;">CUIT:</span><span style="font-size:12px;"> {{cliente.getNegocio().getCuitCuil()}}</span><br>
           <span style="font-size:13px; font-weight: bold;">Ingresos Brutos:</span><span style="font-size:12px;"> {{cliente.getNegocio().getIibb() ?? '-'}}</span><br>
           <span style="font-size:13px; font-weight: bold;">Fecha de Inicio de Actividades:</span><span style="font-size:12px;"> {{cliente.getNegocio().getInicioActividad() ?  cliente.getNegocio().getInicioActividad() | date('d/m/Y') : '-'}}</span>
+        {% endif %}
+          <span style="font-size:13px; font-weight: bold;">Fecha de Emisión:</span><span style="font-size:12px"> -- </span><br><br>
+          <span style="font-size:13px; font-weight: bold;">CUIT:</span><span style="font-size:12px;"> {{cliente.getNegocio().getCuitCuil()}}</span><br>
         </td>
       </tr>
     </table>
     {# PERIODO FACTURADO #}
+    {% if not recibo %}
     <table class="table-periodo">
       <tr>
         <td style="border-left: 1px solid #dddddd;border-bottom: 1px solid #dddddd;"><span style="font-size:13px; font-weight: bold;">Periodo Facturado Desde: </span><span style="font-size:13px;">{{FchServDesde ?? '-'}}</span></td>
@@ -193,6 +196,7 @@
         <td style="border-right: 1px solid #dddddd;border-bottom: 1px solid #dddddd;"><span style="font-size:13px; font-weight: bold;">Fecha de Vto para el pago: </span><span style="font-size:13px;">{{FchVtoPago ?? '-'}}</span></td>
       </tr>
     </table>
+    {% endif %}
     {# DATOS RECEPTOR #}
     {# INFO DATOS EMISOR #}
     {#  background-color: #dddddd; #}
@@ -200,8 +204,10 @@
       <tr>
         <td class="documentos">
           <span style="font-size:13px; font-weight: bold;">{{cliente.getDocumento() == 0 ? 'Documento' : cliente.getTipoDocumento().getDescripcion()}}:</span><span style="font-size:12px"> {{cliente.getDocumento}}</span><br><br>
+          {% if not recibo %}
           <span style="font-size:13px; font-weight: bold;">Condición IVA:</span><span style="font-size:12px;"> {{cliente.getCondicionIva().getDescripcion()}}</span><br>
           <span style="font-size:13px; font-weight: bold;">Condición de venta:</span><span style="font-size:12px"> {{CondVta.getDescripcion()}}</span><br>
+          {% endif %}
         </td>
         <td class="personales">
           <span style="text-align:right;font-size:13px; font-weight: bold;">Razón Social:</span><span style="font-size:12px"> {{cliente.getRazonSocial | upper}}</span> <br><br>

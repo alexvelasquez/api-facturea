@@ -75,6 +75,12 @@ class Venta
      */
     private $cliente;
 
+    /**
+     * One product has many movimientos. This is the inverse side.
+     * @ORM\OneToMany(targetEntity="ProductoVenta", mappedBy="venta")
+     */
+    private $productosVenta;
+
 
     public function __construct($cliente,$tipoVenta,$fVenta)
     {

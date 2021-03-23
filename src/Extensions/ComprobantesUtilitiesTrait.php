@@ -41,9 +41,9 @@ trait ComprobantesUtilitiesTrait
     /** Estado Venta */
     $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));
     if($tipoRecibo && ($condicionVenta->getCondicionVentaId() == $this->getParameter('condicion_cuenta_corriente'))){ //verico si es un recibo y se aplica a cuenta corriente..
-      $estado = $this->manager()->getRepository("App:Estado")->findOneBy(['codigo'=>'PENDIENTE']); //obtengo el estado pendiente
+      $estado = $this->manager()->getRepository("App:Estado")->findOneBy(['codigo'=>'PENDIENTEPAGO']); //obtengo el estado pendiente de pago
       $estadoVenta = new EstadoVenta($venta,$estado);
-
+      $this->manager()->persist($estadoVenta);
       /** agrego movimiento cuenta corriente */
       $cuentaCorriente = $cliente->getCuentaCorriente();
       $valor = $paramFetcher->get('importes')['total'];

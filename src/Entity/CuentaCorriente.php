@@ -29,6 +29,14 @@ class CuentaCorriente
     private $monto;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="monto_favor", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $montoFavor;
+
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="f_modificacion", type="datetime", nullable=true)
@@ -54,8 +62,10 @@ class CuentaCorriente
 
 
     public function __construct($cliente)
-    {
-        return $this->cliente = $cliente; 
+    {   
+        $this->monto = 0;
+        $this->montoFavor = 0;
+        $this->cliente = $cliente; 
     }
 
     public function getCuentaCorrienteId(): ?int
@@ -71,6 +81,19 @@ class CuentaCorriente
     public function setMonto(float $monto): self
     {
         $this->monto = $monto;
+
+        return $this;
+    }
+
+
+    public function getMontoFavor(): ?float
+    {
+        return $this->montoFavor;
+    }
+
+    public function setMontoFavor(float $monto): self
+    {
+        $this->montoFavor = $monto;
 
         return $this;
     }

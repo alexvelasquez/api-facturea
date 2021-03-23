@@ -93,7 +93,7 @@ class ProductoVenta
     /**
      * @var \Venta
      *
-     * @ORM\ManyToOne(targetEntity="Venta")
+     * @ORM\ManyToOne(targetEntity="Venta",inversedBy="productosVenta")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="venta_id", referencedColumnName="venta_id")
      * })

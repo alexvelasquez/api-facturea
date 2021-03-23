@@ -39,6 +39,7 @@ class VentaController extends RestController
             $tipoVentaPedido = $this->manager()->getRepository("App:TipoVenta")->findOneBy(['codigo'=>'PEDIDO']);
             $pedidoCliente = $this->manager()->getRepository("App:Venta")->findOneBy(['cliente'=>$cliente,
                                                                                       'fVenta'=>$fecha,
+                                                                                      'fHasta'=>NULL,
                                                                                       'tipoVenta'=>$tipoVentaPedido]);
             if(!empty($pedidoCliente)) {
               throw new Exception('Ya existe un pedido para el cliente en esa fecha');
@@ -161,10 +162,81 @@ class VentaController extends RestController
     {
         try {
             $venta->setFHasta(new \DateTime());
+            /** control de stock */
+            $productosVenta = $this->manager()->getRepository("App:ProductoVenta")->findBy(['venta'=>$venta]);
+            foreach ($productosVenta as $value) {
+                $producto = $value->getProducto();
+                $producto->setStock($producto->getStock() + $value->getCantidad());
+            }
             $this->manager()->flush();
             /** una vez creado el producto preventa se deberia notificar*/
             return $this->apiResponse($venta,200);
         } catch (Exception $e) {
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
+
+    /**
+     * @Rest\Put("/pedido/editar/{venta}", name="editar_pedido", defaults={"_format":"json"})
+     * @Rest\RequestParam(name="cliente",nullable=false)
+     * @Rest\RequestParam(name="eliminados",nullable=true)
+     * @Rest\RequestParam(name="fecha",nullable=false)
+     * @Rest\RequestParam(name="productos",nullable=false)
+     * @SWG\Response(response=200,description="Cambia el estado de un pedido")
+     * @SWG\Response(response=400,description="Ha ocurrido un error en los parametros")}
+     * @SWG\Response(response=500,description="Ha ocurrido un error al modificar el estado de un pedido")
+
+     * @SWG\Tag(name="Venta")
+     */
+    public function editarPedido(ParamFetcher $paramFetcher, Venta $venta)
+    {
+        try {
+            $cliente =  $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente')['cliente_id']);
+            $eliminados = $paramFetcher->get('eliminados');
+            $fecha = new \DateTime($paramFetcher->get('fecha'));
+            $productos = $paramFetcher->get('productos');
+            $venta->setCliente($cliente);
+            $venta->setFVenta($fecha);
+            $venta->setFModificacion(new \DateTime());
+            $this->manager()->getConnection()->beginTransaction();
+            $this->manager()->getRepository("App:ProductoVenta")->editarProductosVentas($productos,$venta);
+            $this->manager()->getRepository("App:ProductoVenta")->eliminarProductosVentas($eliminados);
+            $this->manager()->flush();
+            $this->manager()->getConnection()->commit();
+            /** una vez creado el producto preventa se deberia notificar*/
+            return $this->apiResponse($venta,200);
+        } catch (Exception $e) {
+            $this->manager()->getConnection()->rollback();
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
+
+    /**
+     * @Rest\Put("/pedido/productos/eliminar", name="eliminar_productos_pedido", defaults={"_format":"json"})
+     * @Rest\RequestParam(name="productos",nullable=false)
+     * @SWG\Response(response=200,description="Cambia el estado de un pedido")
+     * @SWG\Response(response=400,description="Ha ocurrido un error en los parametros")}
+     * @SWG\Response(response=500,description="Ha ocurrido un error al modificar el estado de un pedido")
+
+     * @SWG\Tag(name="Venta")
+     */
+    public function eliminarPedidos(ParamFetcher $paramFetcher)
+    {
+        try {
+            $productos = $paramFetcher->get('productos');
+            $this->manager()->getConnection()->beginTransaction();
+            foreach ($productos as $value) {
+                $productoVenta = $this->manager()->getRepository("App:ProductoVenta")->find($value['producto_venta_id']);
+                $producto = $this->manager()->getRepository("App:Producto")->find($value['producto']['producto_id']);
+                $producto->setStock($producto->getStock()+$productoVenta->getCantidad());
+                $this->manager()->remove($productoVenta);
+            }
+            $this->manager()->flush();
+            $this->manager()->getConnection()->commit();
+            /** una vez creado el producto preventa se deberia notificar*/
+            return $this->apiResponse([],200);
+        } catch (Exception $e) {
+            $this->manager()->getConnection()->rollback();
             return $this->apiResponse($e->getMessage(),500);
         }
     }
