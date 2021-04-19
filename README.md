@@ -47,6 +47,4 @@ php bin/console doctrine:schema:update --force
 
 
 ## Autores ✒️
-
-* **Rodrigo Naranja** - *Fronted*
-* **Velasquez Alex** - *Backend*
+* **Velasquez Alex**
