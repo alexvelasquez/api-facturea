@@ -34,7 +34,6 @@ class AfipRestController extends RestController
      */
     public function estadoServidor (AfipController $afip)
     {
-
         $response = $afip->getWS()->ElectronicBilling->GetServerStatus();
         return $this->apiResponse($response,200);
     }
@@ -220,6 +219,7 @@ class AfipRestController extends RestController
     /**
      * @Rest\Post("/generarComprobante", name="generar_comprobante", defaults={"_format":"json"})
      * @Rest\RequestParam(name="cliente",nullable=false)
+     * @Rest\RequestParam(name="venta",nullable=true)
      * @Rest\RequestParam(name="comprobante",nullable=false)
      * @Rest\RequestParam(name="concepto",nullable=false)
      * @Rest\RequestParam(name="fecha_emision",nullable=false)

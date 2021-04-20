@@ -29,14 +29,23 @@ trait ComprobantesUtilitiesTrait
       $ultimoRecibo = $this->manager()->getRepository("App:Comprobante")->findOneBy(['tipoComprobante'=>$tipoComprobante],['numero'=>'DESC']);
       $numeroComprobante = empty($ultimoRecibo) ? 1 : ((int) $ultimoRecibo->getNumero() + 1);
     } 
-
+    
     /** Venta*/
     $remito = $paramFetcher->get('remito') ?? null;
     $fechaEmision = new \Datetime($paramFetcher->get('fecha_emision'));
     $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente')['cliente_id']);
     $tipoVenta = $this->manager()->getRepository("App:TipoVenta")->find($this->getParameter('tipo_venta_comprobante'));//Comprobante
-    $venta = new Venta($cliente,$tipoVenta,$fechaEmision);
-    $this->manager()->persist($venta);
+    $paramVenta = $paramFetcher->get('venta') ?? null;
+    /** sino existe la venta */
+    if(!$paramVenta){
+      $venta = new Venta($cliente,$tipoVenta,$fechaEmision);
+      $this->manager()->persist($venta);
+    }
+    else{
+      $venta = $this->manager()->getRepository("App:Venta")->find($paramVenta);
+      $estadoVentaAnt = $this->manager()->getRepository("App:EstadoVenta")->findOneBy(['vigente'=>'S','venta'=>$venta]);
+      $estadoVentaAnt->setVigente('N');
+    }
 
     /** Estado Venta */
     $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));

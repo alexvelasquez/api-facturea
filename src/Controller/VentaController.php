@@ -275,8 +275,14 @@ class VentaController extends RestController
     {
         try {
             $estados = $this->manager()->getRepository("App:Estado")->findAll();
+            /** elimno las pendiente de pago y de comprobante */
+            foreach ($estados as $value) {
+                if($value->getCodigo() == 'PENDIENTE' || $value->getCodigo() == 'REALIZADO'){
+                    $values[]=$value;
+                }
+            }
             /** una vez creado el producto preventa se deberia notificar*/
-            return $this->apiResponse($estados,200);
+            return $this->apiResponse($values,200);
         } catch (Exception $e) {
             return $this->apiResponse($e->getMessage(),500);
         }

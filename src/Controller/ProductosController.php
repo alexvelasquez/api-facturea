@@ -28,14 +28,15 @@ class ProductosController extends RestController
 
     use ExcelUtilitiesTrait;
      /**
-     * @Rest\Get("/negocio/{negocio}", name="lista_productos", defaults={"_format":"json"})
+     * @Rest\Get("/negocio", name="lista_productos", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Devuelve todo los productos de un negocio.")
      * @SWG\Response(response=500,description="Hubo un problema para recuperar los productos de un negocio")
      * @SWG\Tag(name="Producto")
      */
-    public function productosNegocio( Negocio $negocio)
+    public function productosNegocio()
     {
         try{
+            $negocio = $this->getUser()->getNegocio();
             $response = $this->manager()->getRepository("App:Producto")->findBy(['negocio'=>$negocio,'fHasta'=>NULL]);
             return $this->apiResponse($response,200);
         } catch (Exception $e) {
@@ -200,16 +201,17 @@ class ProductosController extends RestController
     }
 
     /**
-     * @Rest\Get("/negocio/{negocio}/exportar", name="exportar_productos", defaults={"_format":"json"})
+     * @Rest\Get("/negocio/exportar", name="exportar_productos", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Exportar los productos de un negocio.")
      * @SWG\Response(response=400,description="Error en los parametros")
      * @SWG\Response(response=500,description="Error en el servidor")
      * @SWG\Tag(name="Producto")
      */
-    public function exportarProductos(Negocio $negocio)
+    public function exportarProductos()
     {
         try
         {
+          $negocio = $this->getUser()->getNegocio();
           $spreadsheet = new Spreadsheet();
           $sheet = $spreadsheet->getActiveSheet();
           $sheet->setCellValue('A1', 'NOMBRE PRODUCTO');

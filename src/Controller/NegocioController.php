@@ -28,6 +28,23 @@ class NegocioController extends RestController
 {
     use FileUtilitiesTrait;
      /**
+     * @Rest\Get("", name="current_negocio", defaults={"_format":"json"})
+     * @SWG\Response(response=200,description="Devuelve el negocio actual.")
+     * @SWG\Response(response=500,description="Hubo un problema para recuperar el negocio")
+     * @SWG\Tag(name="Negocio")
+     */
+    public function negocioCurrent()
+    {
+        try
+        {
+            return $this->apiResponse($this->getUser()->getNegocio(),200);
+        } catch (Exception $e)
+        {
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
+
+     /**
      * @Rest\Get("/{negocio}", name="ver_negocio", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Devuelve todas las marcas de un negocio.")
      * @SWG\Response(response=500,description="Hubo un problema para recuperar las marcas de un negocio")
@@ -40,12 +57,12 @@ class NegocioController extends RestController
             return $this->apiResponse($negocio,200);
         } catch (Exception $e)
         {
-            return $this->apiResponse($ex->getMessage(),500);
+            return $this->apiResponse($e->getMessage(),500);
         }
     }
 
     /**
-    * @Rest\Put("/editar/{negocio}", name="editar_negocio", defaults={"_format":"json"})
+    * @Rest\Put("/editar", name="editar_negocio", defaults={"_format":"json"})
     * @Rest\RequestParam(name="razon_social",nullable=false)
     * @Rest\RequestParam(name="condicion_iva",nullable=true)
     * @Rest\RequestParam(name="cuit_cuil",nullable=false)
@@ -62,9 +79,10 @@ class NegocioController extends RestController
     * @SWG\Response(response=500,description="Hubo un problema para recuperar las marcas de un negocio.")
     * @SWG\Tag(name="Negocio")
     */
-   public function negocioEditar(ParamFetcher $paramFetcher, Negocio $negocio)
+   public function negocioEditar(ParamFetcher $paramFetcher)
    {
      try {
+          $negocio = $this->getUser()->getNegocio();
           $razonSocial =$paramFetcher->get('razon_social');
           $nombreFantasia = $paramFetcher->get('nombre_fantasia');
           $condicionIva = !empty($paramFetcher->get('condicion_iva')['condicion_iva_id']) ? $paramFetcher->get('condicion_iva')['condicion_iva_id'] : null;

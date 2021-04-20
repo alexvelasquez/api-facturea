@@ -57,10 +57,7 @@ class LoginController extends RestController
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $encoder) {
         $user = [];
-        $message = "";
         try {
-            $code = 200;
-            $error = false;
             $name = $request->request->get('name');
             $lastname = $request->request->get('lastname');
             $email = $request->request->get('email');
@@ -109,13 +106,13 @@ class LoginController extends RestController
         $serializer = $this->get('jms_serializer');
 
         /** verifco si tengo logo */
-        $logoUser = $this->getUser()->getNegocio()->getLogo();
-        if(!empty($logoUser)){
-          $extension = explode(".", $logoUser)[1];
-          $logoUser = file_get_contents($this->getParameter('public_directory').'/uploads/'.$logoUser);
-          $this->getUser()->getNegocio()->setLogo("data:image/".$extension.";base64,".base64_encode($logoUser));
-        }
-        $response = array('user' => $this->getUser());
+        // $logoUser = $this->getUser()->getNegocio()->getLogo();
+        // if(!empty($logoUser)){
+        //   $extension = explode(".", $logoUser)[1];
+        //   $logoUser = file_get_contents($this->getParameter('public_directory').'/uploads/'.$logoUser);
+        //   $this->getUser()->getNegocio()->setLogo("data:image/".$extension.";base64,".base64_encode($logoUser));
+        // }
+        $response = array('user' => $this->getUser()->getCurrent());
 
         return new Response($serializer->serialize($response, "json"));
     }

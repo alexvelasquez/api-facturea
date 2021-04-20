@@ -37,10 +37,10 @@ class UsuarioController extends RestController
 
     /**
      * @Rest\Put("/editar", name="editar_usuario", defaults={"_format":"json"})
-     * @Rest\RequestParam(name="apellido",nullable=false)
+     * @Rest\RequestParam(name="lastname",nullable=false)
      * @Rest\RequestParam(name="email",nullable=false)
-     * @Rest\RequestParam(name="nombre",nullable=false)
-     * @Rest\RequestParam(name="nombreUsuario",nullable=false)
+     * @Rest\RequestParam(name="name",nullable=false)
+     * @Rest\RequestParam(name="username",nullable=false)
      * @SWG\Response(response=200,description="Devuelve todos los usuarios de un negocio.")
      * @SWG\Response(response=500,description="Hubo un problema para recuperar los usuarios de un negocio")
      * @SWG\Tag(name="Usuario")
@@ -48,19 +48,18 @@ class UsuarioController extends RestController
     public function editarUsuario(ParamFetcher $paramFetcher)
     {
         try{
-            $name = $paramFetcher->get('nombre');
-            $username  = $paramFetcher->get('nombreUsuario');
+            $name = $paramFetcher->get('name');
+            $username  = $paramFetcher->get('username');
             $email = $paramFetcher->get('email');
-            $lastname = $paramFetcher->get('apellido');
+            $lastname = $paramFetcher->get('lastname');
 
             $user = $this->getUser();
             $user->setName($name);
             $user->setLastName($lastname);
             $user->setEmail($email);
             $user->setUsername($username);
-
             $this->manager()->flush();
-            return $this->apiResponse($user,200);
+            return $this->apiResponse($user->getCurrent(),200);
         } catch (Exception $e) {
             return $this->apiResponse($e->getMessage(),500);
         }

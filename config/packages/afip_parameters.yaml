@@ -1,6 +1,6 @@
 afip:
     parameters:
-        CUIT: 20298505216
+        CUIT: 20306094905
         production: false
         res_folder: 'config/afip/'
         ta_folder:  'var/cache/'

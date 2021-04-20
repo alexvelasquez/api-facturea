@@ -45,7 +45,7 @@ class Cliente
     /**
      * @var string
      *
-     * @ORM\Column(name="telefono", type="string", length=255, nullable=false)
+     * @ORM\Column(name="telefono", type="string", length=255, nullable=true)
      */
     private $telefono;
 

@@ -20,14 +20,15 @@ class CategoriasController extends RestController
 {
     use PDFUtilitiesTrait;
      /**
-     * @Rest\Get("/negocio/{negocio}", name="lista_categorias", defaults={"_format":"json"})
+     * @Rest\Get("/negocio", name="lista_categorias", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Devuelve todas las categorias")
      * @SWG\Response(response=500,description="Hubo un problema para recuperar las categorias")
      * @SWG\Tag(name="Categoria")
      */
-    public function categoriasNegocio(Negocio $negocio)
+    public function categoriasNegocio()
     {
         try{
+            $negocio = $this->getUser()->getNegocio();
             $response = $this->manager()->getRepository("App:Categoria")->findBy(['negocio'=>$negocio],['descripcion'=>'ASC']);
             return $this->apiResponse($response,200);
         } catch (Exception $e) {

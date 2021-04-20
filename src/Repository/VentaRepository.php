@@ -42,12 +42,13 @@ class VentaRepository extends EntityRepository
                 WHERE ev.vigente = :vigente AND
                       v.cliente = :cliente AND
                       v.fHasta IS NULL AND
-                      (e.codigo = :pendientePago OR e.codigo = :pendienteComprobante)
+                      (e.codigo = :pendientePago OR e.codigo = :pendienteComprobante OR e.codigo = :pagado)
                 GROUP BY ev, v, e";
       $query = $em->createQuery($dql)
       ->setParameter(':cliente',$cliente)
       ->setParameter(':pendientePago','PENDIENTEPAGO')
       ->setParameter(':pendienteComprobante','PENDIENTECOMPROBANTE')
+      ->setParameter(':pagado','PAGADO')
       ->setParameter(':vigente','S');
       return $query->getArrayResult();
     }

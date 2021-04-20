@@ -84,6 +84,8 @@ class User implements UserInterface
      */
     protected $updatedAt;
 
+
+
     /**
      * @var \Negocio
      *
@@ -144,7 +146,7 @@ class User implements UserInterface
      */
     public function setLastName($lastname)
     {
-        $this->lastName = $lastname;
+        $this->lastname = $lastname;
 
         return $this;
     }
@@ -321,5 +323,15 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getCurrent() {
+        $user = ["id"=>$this->id, 
+                "name"=>$this->name, 
+                "lastname"=>$this->lastname,
+                "email"=>$this->email,
+                "username"=>$this->username,
+                "negocio"=>$this->getNegocio()->getNegocioId(),
+                "role"=>$this->roles[0]];
+        return $user;
+    }
 
 }

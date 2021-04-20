@@ -257,5 +257,8 @@ class Producto
         return $this;
     }
 
-
+    public function getPrecioPublicado(){
+        $monto = $this->precioCompra + ($this->precioCompra * ($this->aumento / 100));
+        return floor(($monto*100))/100; 
+    }
 }

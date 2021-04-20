@@ -94,16 +94,23 @@ class Negocio
     /**
      * @var string
      *
-     * @ORM\Column(name="factura_electronica", type="string", length=1, nullable=false)
+     * @ORM\Column(name="factura_electronica", type="string", length=1, nullable=true)
      */
     private $facturaElectronica;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="pedido", type="string", length=1, nullable=false)
+     * @ORM\Column(name="pedido", type="string", length=1, nullable=true)
      */
     private $pedido;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="configuracion", type="string", length=1, nullable=true)
+     */
+    private $configuracion;
 
     /**
      * @var \CondicionIva
@@ -129,6 +136,7 @@ class Negocio
     public function __construct(){
         $this->facturaElectronica = 'N';
         $this->pedido = 'N';
+        $this->configuracion = 'N';
       }
     public function getNegocioId(): ?int
     {
@@ -305,6 +313,17 @@ class Negocio
     {
         $this->localidad = $localidad;
 
+        return $this;
+    }
+
+    public function getConfiguracion()
+    {
+        return $this->configuracion;
+    }
+
+    public function setConfiguracion($configuracion): self
+    {
+        $this->configuracion = $configuracion;
         return $this;
     }
 
