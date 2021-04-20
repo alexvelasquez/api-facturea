@@ -46,7 +46,7 @@ php bin/console doctrine:schema:update --force
 php bin/console doctrine:migrations:execute 20201120215344
 ```
 
-_Cargar Provincias y Localidades
+_Cargar Provincias y Localidades_
 ```
 Desde POSTMAN ó INSOMNIA
 
