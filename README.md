@@ -51,11 +51,8 @@ _Cargar Provincias y Localidades
 Desde POSTMAN ó INSOMNIA
 
 Ejecutar los siguientes endpoint:
-- {path}/api/login_check (captura) para obtener el token.
-![image](https://user-images.githubusercontent.com/45674641/115315723-4d387a00-a14e-11eb-9681-7ab22531fdba.png)
-
-- {path}/api/datosGeograficos/cargar ejecuto el endpoint con el token generado anteriormente.
-![image](https://user-images.githubusercontent.com/45674641/115319687-b15f3c00-a156-11eb-9576-52e3f1d806f3.png)
+- (POST) **{path}/api/login_check** para obtener el token.
+- (POST) **{path}/api/datosGeograficos/cargar** ejecuto el endpoint con el token generado anteriormente.
 
 
 ```
