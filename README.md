@@ -43,6 +43,18 @@ _Generar DATABASE_
 ```
 php bin/console doctrine:database:create
 php bin/console doctrine:schema:update --force
+php bin/console doctrine:migrations:execute 20201120215344
+```
+
+_Cargar Provincias y Localidades_
+```
+Desde POSTMAN ó INSOMNIA
+
+Ejecutar los siguientes endpoint:
+- (POST) **{path}/api/login_check** para obtener el token.
+- (POST) **{path}/api/datosGeograficos/cargar** ejecuto el endpoint con el token generado anteriormente.
+
+
 ```
 
 
