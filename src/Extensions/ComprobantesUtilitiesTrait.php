@@ -86,7 +86,9 @@ trait ComprobantesUtilitiesTrait
     $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente'));
     foreach ($paramFetcher->get('productos') as $value) {
       $value['producto'] = $this->manager()->getRepository("App:Producto")->find($value['producto']);
-      $value['tipo_alicuota'] = $this->manager()->getRepository("App:TipoAlicuota")->find($value['tipo_alicuota']);
+      if($tipoComprobante->getAfipId()  == $this->getParameter('factura_A')){
+        $value['tipo_alicuota'] = $this->manager()->getRepository("App:TipoAlicuota")->find($value['tipo_alicuota']);
+      }
       $productos[] = $value;
     }
     $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));

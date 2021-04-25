@@ -60,7 +60,7 @@ trait AfipUtilitiesTrait
       'MonId' 	=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos)
       'MonCotiz' 	=> 1,     // Cotización de la moneda usada (1 para pesos argentinos)
     );
-    if($tipoComprobante->getAfipId() == $this->getParameter('factura_A') || $this->getParameter('factura_B')){
+    if($tipoComprobante->getAfipId() == $this->getParameter('factura_A') || $tipoComprobante->getAfipId() == $this->getParameter('factura_B')){
         $alicuotas = $this->obtenerAliCuotasTotales($paramFetcher->get('productos'),$paramFetcher->get('importes')['gravado']);
         $data['Iva'] = array_values($alicuotas);
     }
