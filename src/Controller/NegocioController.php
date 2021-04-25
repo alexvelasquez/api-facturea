@@ -2,20 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Producto;
 use App\Entity\Negocio;
-use App\Entity\Marca;
-use App\Entity\Categoria;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
+
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
+
 use Swagger\Annotations as SWG;
 use App\Extensions\FileUtilitiesTrait;
 
@@ -113,6 +106,7 @@ class NegocioController extends RestController
           $negocio->setLocalidad($localidad);
           $negocio->setTelefono($telefono);
           $negocio->setLogo($logo);
+          $negocio->setConfiguracion('S');
 
           if(empty($logo) && !empty($negocio->getLogo())){ // si tengo imagen previo y envio un null
             $this->eliminarLogo($this->getParameter('public_directory').'/uploads/'.$negocio->getLogo());

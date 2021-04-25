@@ -6,10 +6,6 @@ use App\Entity\User;
 use App\Entity\Negocio;
 use App\Entity\Notificacion;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Request\ParamFetcher;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -74,6 +70,7 @@ class LoginController extends RestController
               throw new Exception('El email ya se encuentra registrado');
             }
 
+
             $negocio = new Negocio();
             $this->manager()->persist($negocio);
 
@@ -83,7 +80,7 @@ class LoginController extends RestController
             $user->setRoles($rol);
             $this->manager()->persist($user);
 
-            $titulo = 'Configuración Inicial';
+            $titulo = 'CONFIGURACIÓN INICIAL';
             $texto = 'Bienvenido a Facturea '.strtoupper($name).' '.strtoupper($lastname).'<br>';
             $texto .= 'Para empezar a utilizar nuestro sistema, deberás completar el formulario de configuración.';
             $notificacion = new Notificacion($titulo,$texto,$user,'/configuracion');
@@ -112,7 +109,7 @@ class LoginController extends RestController
         //   $logoUser = file_get_contents($this->getParameter('public_directory').'/uploads/'.$logoUser);
         //   $this->getUser()->getNegocio()->setLogo("data:image/".$extension.";base64,".base64_encode($logoUser));
         // }
-        $response = array('user' => $this->getUser()->getCurrent());
+        $response = array('user' => $this->getUser());
 
         return new Response($serializer->serialize($response, "json"));
     }

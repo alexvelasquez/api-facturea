@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Notificacion;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,7 +19,7 @@ use Swagger\Annotations as SWG;
 class UsuarioController extends RestController
 {
 
-     /**
+    /**
      * @Rest\Get("", name="lista_usuarios", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Devuelve todos los usuarios de un negocio.")
      * @SWG\Response(response=500,description="Hubo un problema para recuperar los usuarios de un negocio")
@@ -26,11 +27,11 @@ class UsuarioController extends RestController
      */
     public function usuarios()
     {
-        try{
+        try {
             $response = $this->manager()->getRepository("App:User")->findRoleUser();
-            return $this->apiResponse($response,200);
+            return $this->apiResponse($response, 200);
         } catch (Exception $e) {
-            return $this->apiResponse($e->getMessage(),500);
+            return $this->apiResponse($e->getMessage(), 500);
         }
     }
 
@@ -47,7 +48,7 @@ class UsuarioController extends RestController
      */
     public function editarUsuario(ParamFetcher $paramFetcher)
     {
-        try{
+        try {
             $name = $paramFetcher->get('name');
             $username  = $paramFetcher->get('username');
             $email = $paramFetcher->get('email');
@@ -59,9 +60,9 @@ class UsuarioController extends RestController
             $user->setEmail($email);
             $user->setUsername($username);
             $this->manager()->flush();
-            return $this->apiResponse($user->getCurrent(),200);
+            return $this->apiResponse($user->getCurrent(), 200);
         } catch (Exception $e) {
-            return $this->apiResponse($e->getMessage(),500);
+            return $this->apiResponse($e->getMessage(), 500);
         }
     }
 
@@ -73,21 +74,21 @@ class UsuarioController extends RestController
      * @SWG\Response(response=500,description="Hubo un problema al actualizar la contraseña")
      * @SWG\Tag(name="Usuario")
      */
-    public function editarClave(ParamFetcher $paramFetcher,UserPasswordEncoderInterface $encoder)
+    public function editarClave(ParamFetcher $paramFetcher, UserPasswordEncoderInterface $encoder)
     {
-        try{
+        try {
             $actual = $paramFetcher->get('actual');
             $nueva  = $paramFetcher->get('nueva');
 
             $user = $this->getUser();
-            $passwordActual = $encoder->encodePassword($user,$actual);
-            if($user->getPassword() !== $passwordActual) return $this->apiResponse('Contraseña incorrecta',400);
-            $passwordNueva = $encoder->encodePassword($user,$nueva);
+            $passwordActual = $encoder->encodePassword($user, $actual);
+            if ($user->getPassword() !== $passwordActual) return $this->apiResponse('Contraseña incorrecta', 400);
+            $passwordNueva = $encoder->encodePassword($user, $nueva);
             $user->setPassword($passwordNueva);
             $this->manager()->flush();
-            return $this->apiResponse($user,200);
+            return $this->apiResponse($user, 200);
         } catch (Exception $e) {
-            return $this->apiResponse($e->getMessage(),500);
+            return $this->apiResponse($e->getMessage(), 500);
         }
     }
 
@@ -101,13 +102,29 @@ class UsuarioController extends RestController
      */
     public function activarFactura(ParamFetcher $paramFetcher, User $usuario)
     {
-        try{
+        try {
             $valor = $paramFetcher->get('valor');
-            $usuario->getNegocio()->setFacturaElectronica($valor);
+            $negocio =  $usuario->getNegocio();
+            $negocio->setFacturaElectronica($valor);
+            if ($valor === 'S') {
+                $negocio->setConfiguracion('N');
+                $titulo = 'FACTURA ELECTRÓNICA HABILITADA';
+                $texto = 'Estimado, se encuentra habilitada la sección de facturación, por favor complete la configuración requerida.';
+                $notificacion = new Notificacion($titulo, $texto, $usuario, '/configuración');
+                $this->manager()->persist($notificacion);
+            }
+            else{
+                /** restablezco los valores necesarios para la facturacion */
+                $negocio->setNombreFantasia(null);
+                $negocio->setCondicionIva(null);
+                $negocio->setIibb(null);
+                $negocio->setInicioActividad(null);
+                $negocio->setPuntoVta(null);
+            }
             $this->manager()->flush();
-            return $this->apiResponse($this->getUser(),200);
+            return $this->apiResponse($this->getUser(), 200);
         } catch (Exception $e) {
-            return $this->apiResponse($e->getMessage(),500);
+            return $this->apiResponse($e->getMessage(), 500);
         }
     }
     /**
@@ -119,23 +136,27 @@ class UsuarioController extends RestController
      */
     public function activarPedido(ParamFetcher $paramFetcher, User $usuario)
     {
-        try{
+        try {
             $valor = $paramFetcher->get('valor');
             $usuario->getNegocio()->setPedido($valor);
+            /** agrego notificación */
+            if ($valor === 'S') {
+                $titulo = 'SECCIÓN DE PEDIDOS HABILITADA';
+                $texto = 'Estimado, a partir de ahora podrás utilizar la sección de pedidos disponible en el menú <strong>PEDIDOS</strong>';
+                $redirect = '/pedidos';
+            }
+            else{
+                $titulo = 'SECCIÓN PEDIDOS INHABILITADA';
+                $texto = 'Estimado, la sección pedidos fue deshabilitada, por favor, en caso de activarla nuevamente, comunicarse con nosotros.';
+                $redirect = null;
+            }
+            $notificacion = new Notificacion($titulo, $texto, $usuario, $redirect);
+            $this->manager()->persist($notificacion);
+
             $this->manager()->flush();
-            return $this->apiResponse($this->getUser(),200);
+            return $this->apiResponse($this->getUser(), 200);
         } catch (Exception $e) {
-            return $this->apiResponse($e->getMessage(),500);
+            return $this->apiResponse($e->getMessage(), 500);
         }
     }
-
-    // /**
-    //  * @Rest\Get("/informes", name="informes", defaults={"_format":"json"})
-    //  * @SWG\Response(response=200,description="devuelve los informes del usuario logueado.")
-    //  * @SWG\Response(response=500,description="Hubo un problema al recuperar los informes")
-    //  * @SWG\Tag(name="Usuario")
-    //  */
-    // public function informes(){
-
-    // }
 }

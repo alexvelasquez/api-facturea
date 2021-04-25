@@ -180,7 +180,7 @@
           <span style="font-size:13px; font-weight: bold;">Punto de Venta:</span><span style="font-size:12px"> {{cliente.getNegocio().getPtoVtaFactura()}}</span>
           <span style="font-size:13px; font-weight: bold;">Comp. Nro:</span><span style="font-size:12px"> {{comp.getNumero()}}</span><br>
           <span style="font-size:13px; font-weight: bold;">Ingresos Brutos:</span><span style="font-size:12px;"> {{cliente.getNegocio().getIibb() ?? '-'}}</span><br>
-          <span style="font-size:13px; font-weight: bold;">Fecha de Inicio de Actividades:</span><span style="font-size:12px;"> {{cliente.getNegocio().getInicioActividad() ?  cliente.getNegocio().getInicioActividad() | date('d/m/Y') : '-'}}</span>
+          <span style="font-size:13px; font-weight: bold;">Fecha de Inicio de Actividades:</span><span style="font-size:12px;"> {{cliente.getNegocio().getInicioActividad() ?  cliente.getNegocio().getInicioActividad() | date('d/m/Y') : '-'}}</span><br>
         {% endif %}
           <span style="font-size:13px; font-weight: bold;">Fecha de Emisión:</span><span style="font-size:12px"> {{CbteFch | date('y/m/d')}} </span><br><br>
           <span style="font-size:13px; font-weight: bold;">CUIT:</span><span style="font-size:12px;"> {{cliente.getNegocio().getCuitCuil()}}</span><br>
@@ -241,7 +241,7 @@
           <td style="font-size:10px;">{{producto.bonificacion | number_format(2, ',', '.')}}</td>
           <td style="font-size:10px;">{{producto.monto_bonif | number_format(2, ',', '.')}}</td>
           {% if CbteTipo.getAfipId() == 1 %}
-            <td style="font-size:10px;">{{producto.alicuota.descripcion}}</td>
+            <td style="font-size:10px;">{{producto.tipo_alicuota.descripcion}}</td>
           {% endif %}
           <td style="font-size:10px;">{{producto.subtotal | number_format(2, ',', '.')}}</td>
         </tr>

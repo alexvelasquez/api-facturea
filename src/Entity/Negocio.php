@@ -297,7 +297,7 @@ class Negocio
         return $this->condicionIva;
     }
 
-    public function setCondicionIva(?CondicionIva $condicionIva): self
+    public function setCondicionIva($condicionIva): self
     {
         $this->condicionIva = $condicionIva;
 

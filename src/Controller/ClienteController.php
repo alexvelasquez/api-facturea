@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Cliente;
 use App\Entity\CuentaCorriente;
-use App\Entity\Negocio;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Component\Config\Definition\Exception\Exception;

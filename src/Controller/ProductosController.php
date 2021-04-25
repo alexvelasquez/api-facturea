@@ -376,17 +376,18 @@ class ProductosController extends RestController
     }
 
     /**
-     * @Rest\Post("/negocio/{negocio}/importar_excel", name="importar", defaults={"_format":"json"})
+     * @Rest\Post("/importar", name="importar", defaults={"_format":"json"})
      * @Rest\FileParam(name="file",nullable=false)
      * @SWG\Response(response=200,description="Exportar los productos de un negocio.")
      * @SWG\Response(response=400,description="Error en los parametros")
      * @SWG\Response(response=500,description="Error en el servidor")
      * @SWG\Tag(name="Producto")
      */
-    public function importarModelo(ParamFetcher $paramFetcher,Negocio $negocio)
+    public function importarModelo(ParamFetcher $paramFetcher)
     {
         try
         {
+          $negocio = $this->getUser()->getNegocio();
           $files = $paramFetcher->get('file');
           /** Renombro el archivo temporal con .xlsx*/
           $dir = str_replace('.tmp','.xlsx',$files->getPathName());

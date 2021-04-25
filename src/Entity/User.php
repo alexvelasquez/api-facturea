@@ -323,15 +323,4 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getCurrent() {
-        $user = ["id"=>$this->id, 
-                "name"=>$this->name, 
-                "lastname"=>$this->lastname,
-                "email"=>$this->email,
-                "username"=>$this->username,
-                "negocio"=>$this->getNegocio()->getNegocioId(),
-                "role"=>$this->roles[0]];
-        return $user;
-    }
-
 }

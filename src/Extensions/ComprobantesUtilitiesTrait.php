@@ -94,7 +94,7 @@ trait ComprobantesUtilitiesTrait
     $data['ImpTotal'] = $paramFetcher->get('importes')['total'];
     $data['CondVta'] = $condicionVenta;
     $data['Iva'] = [];
-    if($tipoComprobante->getAfipId() == 1){
+    if($tipoComprobante->getAfipId() == $this->getParameter('factura_A') ){
       $alicuotas = $this->obtenerAliCuotasTotales($data['productos'],$paramFetcher->get('importes')['gravado']);
       $data['Iva'] = array_values($alicuotas);
     }

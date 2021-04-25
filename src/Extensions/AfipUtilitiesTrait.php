@@ -23,7 +23,7 @@ trait AfipUtilitiesTrait
   {
       $alicuotas = [];
       foreach ($productos as $producto) {
-            $id = $producto['alicuota']['afip_id'];
+            $id = $producto['tipo_alicuota']['afip_id'];
             $alicuotas['ali'.$id]['Id']=$id;
             /** BASE IMPONIBLE **/
             $alicuotas['ali'.$id]['BaseImp'] = array_key_exists('Importe',$alicuotas['ali'.$id]) ? $alicuotas['ali'.$id]['BaseImp'] : 0;
@@ -57,7 +57,7 @@ trait AfipUtilitiesTrait
       'MonId' 	=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos)
       'MonCotiz' 	=> 1,     // Cotización de la moneda usada (1 para pesos argentinos)
     );
-    if($tipoComprobante->getAfipId() == 1){
+    if($tipoComprobante->getAfipId() == $this->getParameter('factura_A') || $this->getParameter('factura_B')){
         $alicuotas = $this->obtenerAliCuotasTotales($paramFetcher->get('productos'),$paramFetcher->get('importes')['gravado']);
         $data['Iva'] = array_values($alicuotas);
     }

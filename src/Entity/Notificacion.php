@@ -45,7 +45,7 @@ class Notificacion
     /**
      * @var int
      *
-     * @ORM\Column(name="redireccion",type="string", length=255, nullable=false)
+     * @ORM\Column(name="redireccion",type="string", length=255, nullable=true)
      */
     private $redireccion;
 
