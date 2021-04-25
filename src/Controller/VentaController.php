@@ -252,9 +252,9 @@ class VentaController extends RestController
     {
         try
         {
-            $productosPreventa = $this->manager()->getRepository("App:ProductoVenta")->findBy(['venta'=>$venta]);
+            $productosVenta = $this->manager()->getRepository("App:ProductoVenta")->findBy(['venta'=>$venta]);
             $data = ['venta'=>$venta,
-                     'productos'=>$productosPreventa];
+                     'productos'=>$productosVenta];
             $pdfBase64 = $this->obtenerPDF('pdf/pedido.html.twig',$data);
             $response =  array('file' => "data:application/pdf;base64,".$pdfBase64);
             return $this->apiResponse($response,200);

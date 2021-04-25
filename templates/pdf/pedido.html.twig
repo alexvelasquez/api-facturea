@@ -54,12 +54,23 @@
         <th style="font-size:10px;">Código</th>
         <th style="font-size:10px;">Producto</th>
         <th style="font-size:10px;">Cantidad</th>
+        <th style="font-size:10px;">Precio</th>
+        <th style="font-size:10px;">Descuento</th>
+        <th style="font-size:10px;">Iva %</th>
+        <th style="font-size:10px;">Total IVA</th>
+        <th style="font-size:10px;">Subtotal</th>
       </tr>
       {% for producto in productos %}
       <tr>
         <td style="font-size:10px;">{{producto.producto.codigo ?? '-'}}</td>
         <td style="font-size:10px;">{{producto.producto.descripcion}}</td>
         <td style="font-size:10px;">{{producto.cantidad | number_format(2, ',', '.') }}</td>
+        <td style="font-size:10px;">$ {{producto.precioUnitario | number_format(2, ',', '.') }}</td>
+        <td style="font-size:10px;">$ {{producto.bonificacion | number_format(2, ',', '.') }}</td>
+        <td style="font-size:10px;">{{producto.tipoAlicuota ? producto.tipoAlicuota.descripcion : '--'}}</td>
+        <td style="font-size:10px;">$ {{producto.montoIva | number_format(2, ',', '.') }}</td>
+        <td style="font-size:10px;">$ {{producto.subtotal | number_format(2, ',', '.') }}</td>
+
       </tr>
     {% endfor %}
     </table>

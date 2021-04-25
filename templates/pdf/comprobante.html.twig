@@ -234,14 +234,19 @@
         </tr>
         {% for producto in productos %}
         <tr>
-          <td style="font-size:10px;">{{producto.producto.codigo ?? '-'}}</td>
-          <td style="font-size:10px;">{{producto.producto.descripcion}}</td>
+          <td style="font-size:10px;">{{producto.producto.getCodigo ?? '-'}}</td>
+          <td style="font-size:10px;">{{producto.producto.getDescripcion}}</td>
           <td style="font-size:10px;">{{producto.cantidad | number_format(2, ',', '.') }}</td>
-          <td style="font-size:10px;">{{producto.precio_unitario | number_format(2, ',', '.')}}</td>
+          {# factura B #}
+          {% if CbteTipo.getAfipId() == 6 %}
+            <td style="font-size:10px;">{{producto.subtotal | number_format(2, ',', '.')}}</td>
+          {% else %}
+            <td style="font-size:10px;">{{producto.precio_unitario | number_format(2, ',', '.')}}</td>
+          {% endif %}
           <td style="font-size:10px;">{{producto.bonificacion | number_format(2, ',', '.')}}</td>
           <td style="font-size:10px;">{{producto.monto_bonif | number_format(2, ',', '.')}}</td>
           {% if CbteTipo.getAfipId() == 1 %}
-            <td style="font-size:10px;">{{producto.tipo_alicuota.descripcion}}</td>
+            <td style="font-size:10px;">{{producto.tipo_alicuota.getDescripcion}}</td>
           {% endif %}
           <td style="font-size:10px;">{{producto.subtotal | number_format(2, ',', '.')}}</td>
         </tr>
@@ -259,15 +264,12 @@
 
             {# factura A #}
             {% if CbteTipo.getAfipId() == 1 %}
-            <span style="font-size:13px; font-weight: bold;">Importe Neto no Gravado:$</span><br>
-            <span style="font-size:13px; font-weight: bold;">Importe Exento:$</span><br>
-            <span style="font-size:13px; font-weight: bold;">Importe Neto Gravado:$</span><br>
-            <span style="font-size:13px; font-weight: bold;">Importe IVA 0%:$</span><br>
-            <span style="font-size:13px; font-weight: bold;">Importe IVA 2.5%:$</span><br>
-            <span style="font-size:13px; font-weight: bold;">Importe IVA 5%:$</span><br>
-            <span style="font-size:13px; font-weight: bold;">Importe IVA 10.5%:$</span><br>
-            <span style="font-size:13px; font-weight: bold;">Importe IVA 21%:$</span><br>
-            <span style="font-size:13px; font-weight: bold;">Importe IVA 27%:$</span><br>
+                  <span style="font-size:13px; font-weight: bold;">Importe Neto no Gravado:$</span><br>
+                  <span style="font-size:13px; font-weight: bold;">Importe Exento:$</span><br>
+                  <span style="font-size:13px; font-weight: bold;">Importe Neto Gravado:$</span><br>
+              {% for value in Iva %}
+                  <span style="font-size:13px; font-weight: bold;">Importe IVA {{value.Descripcion}}:$</span><br>
+              {% endfor %}
             {% endif %}
             <span style="font-size:13px; font-weight: bold;">Importe Total:$</span>
           </td>
@@ -275,17 +277,14 @@
           <td style="width:15%;text-align:right;margin-bottom:-60px;">
           {# importes factura A #}
           {% if CbteTipo.getAfipId() == 1 %}
-          <span style="font-size:13px;">{{ImpTotConc | number_format(2, ',', '.') }}</span><br>
-          <span style="font-size:13px;">{{ImpOpEx | number_format(2, ',', '.')}}</span><br>
-          <span style="font-size:13px;">{{ImpNeto | number_format(2, ',', '.')}}</span><br>
-          <span style="font-size:13px;">{{(Iva.ali3.Importe ?? 0 )| number_format(2, ',', '.') }}</span><br>
-          <span style="font-size:13px;">{{(Iva.ali9.Importe ?? 0 )| number_format(2, ',', '.') }}</span><br>
-          <span style="font-size:13px;">{{(Iva.ali8.Importe ?? 0 )| number_format(2, ',', '.') }}</span><br>
-          <span style="font-size:13px;">{{(Iva.ali4.Importe ?? 0 )| number_format(2, ',', '.')}}</span><br>
-          <span style="font-size:13px;">{{(Iva.ali5.Importe ?? 0 )| number_format(2, ',', '.') }}</span><br>
-          <span style="font-size:13px;">{{(Iva.ali6.Importe ?? 0 )| number_format(2, ',', '.') }}</span><br>
-          {% endif %}
-          <span style="font-size:13px;">{{ImpTotal | number_format(2, ',', '.')}}</span>
+              <span style="font-size:13px;">{{ImpTotConc | number_format(2, ',', '.') }}</span><br>
+              <span style="font-size:13px;">{{ImpOpEx | number_format(2, ',', '.')}}</span><br>
+              <span style="font-size:13px;">{{ImpNeto | number_format(2, ',', '.')}}</span><br>
+            {% for value in Iva %}
+              <span style="font-size:13px;">{{(value.Importe ?? 0 )| number_format(2, ',', '.') }}</span><br>
+              {% endfor %}
+            {% endif %}
+            <span style="font-size:13px;">{{ImpTotal | number_format(2, ',', '.')}}</span>
           </td>
         </tr>
       </table>

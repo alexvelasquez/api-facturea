@@ -23,25 +23,28 @@ trait AfipUtilitiesTrait
   {
       $alicuotas = [];
       foreach ($productos as $producto) {
-            $id = $producto['tipo_alicuota']['afip_id'];
+            $tipoAlicuota = $this->manager()->getRepository("App:TipoAlicuota")->find($producto['tipo_alicuota']);
+            $id = $tipoAlicuota->getAfipId();
             $alicuotas['ali'.$id]['Id']=$id;
             /** BASE IMPONIBLE **/
             $alicuotas['ali'.$id]['BaseImp'] = array_key_exists('Importe',$alicuotas['ali'.$id]) ? $alicuotas['ali'.$id]['BaseImp'] : 0;
             $alicuotas['ali'.$id]['BaseImp'] +=  $producto['subtotal_sin_iva'];
             $alicuotas['ali'.$id]['Importe'] = array_key_exists('Importe',$alicuotas['ali'.$id]) ? $alicuotas['ali'.$id]['Importe'] : 0;
             $alicuotas['ali'.$id]['Importe'] += $producto['monto_iva'];
+            $alicuotas['ali'.$id]['Descripcion'] = $tipoAlicuota->getDescripcion();
       }
       return $alicuotas;
   }
 
   protected function parametrosComprobanteAfip($paramFetcher,$tipoComprobante,$nroComprobante){
+    $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente'));
     $data = array(
       'CantReg' 	=> 1,  // Cantidad de comprobantes a registrar
       'PtoVta' 	=> $this->getUser()->getNegocio()->getPuntoVta(),  // Punto de venta
       'CbteTipo' 	=> intval($tipoComprobante->getAfipId()),  // Tipo de comprobante (ver tipos disponibles)
       'Concepto' 	=> $paramFetcher->get('concepto'),  // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
-      'DocTipo' 	=>  $paramFetcher->get('cliente')['tipo_documento']['afip_id'], // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
-      'DocNro' 	=>    $paramFetcher->get('cliente')['documento'],  // Número de documento del comprador (0 consumidor final)
+      'DocTipo' 	=>  $cliente->getTipoDocumento()->getAfipId(), // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
+      'DocNro' 	=>    $cliente->getDocumento(),  // Número de documento del comprador (0 consumidor final)
       'CbteDesde' 	=> $nroComprobante,  // Número de comprobante o numero del primer comprobante en caso de ser mas de uno
       'CbteHasta' 	=> $nroComprobante,  // Número de comprobante o numero del último comprobante en caso de ser mas de uno
       'CbteFch' 	=>   intval(date('Ymd',strtotime($paramFetcher->get('fecha_emision')))), // (Opcional) Fecha del comprobante (yyyymmdd) o fecha actual si es nulo

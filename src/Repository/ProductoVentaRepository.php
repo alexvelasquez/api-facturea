@@ -11,7 +11,7 @@ class ProductoVentaRepository extends EntityRepository
     {
       $em = $this->getEntityManager();
       foreach ($productos as $value) {
-        $producto = $em->getRepository("App:Producto")->find($value['producto']['producto_id']);
+        $producto = $em->getRepository("App:Producto")->find($value['producto']);
         $cantidad = $value['cantidad'];
         if($producto->getStock() < $cantidad){
           throw new \Exception('La cantidad del producto supera el stock actual');
@@ -24,7 +24,7 @@ class ProductoVentaRepository extends EntityRepository
         $montoIva = $value['monto_iva'] ?? null;
         $precioUnitario = $value['precio_unitario'];
         $bonificacion = $value['bonificacion'];
-        $alicuota = !empty($value['tipo_alicuota']) ? $em->getRepository("App:TipoAliCuota")->find($value['tipo_alicuota']['tipo_alicuota_id']) : null;
+        $alicuota = !empty($value['tipo_alicuota']) ? $em->getRepository("App:TipoAliCuota")->find($value['tipo_alicuota']) : null;
         $productoVenta = new ProductoVenta($cantidad,$subtotal,$subtotalSinIva,$bonificacion,$montoBonif,$precioUnitario,$producto,$venta,$alicuota,$montoIva);
         $em->persist($productoVenta);
       }
@@ -39,7 +39,7 @@ class ProductoVentaRepository extends EntityRepository
         /** si el producto tiene id lo modifico*/
         if(!empty($value['producto_venta_id'])){
           $productoVenta = $em->getRepository("App:ProductoVenta")->find($value['producto_venta_id']);
-          $producto = $em->getRepository("App:Producto")->find($value['producto']['producto_id']);
+          $producto = $em->getRepository("App:Producto")->find($value['producto']);
           $cantidad = $value['cantidad'];
           if($producto->getStock() < $cantidad ){
             throw new \Exception('La cantidad del producto supera el stock actual');
@@ -53,11 +53,11 @@ class ProductoVentaRepository extends EntityRepository
           $productoVenta->setMontoIva($value['monto_iva'] ?? null);
           $productoVenta->setPrecioUnitario($value['precio_unitario']);
           $productoVenta->setBonificacion($value['bonificacion']);
-          $alicuota = !empty($value['tipo_alicuota']) ? $em->getRepository("App:TipoAliCuota")->find($value['tipo_alicuota']['tipo_alicuota_id']) : null;
+          $alicuota = !empty($value['tipo_alicuota']) ? $em->getRepository("App:TipoAliCuota")->find($value['tipo_alicuota']) : null;
           $productoVenta->setTipoAlicuota($alicuota);
         }
         else{
-          $producto = $em->getRepository("App:Producto")->find($value['producto']['producto_id']);
+          $producto = $em->getRepository("App:Producto")->find($value['producto']);
           $cantidad = $value['cantidad'];
           if($producto->getStock() < $cantidad ){
             throw new \Exception('La cantidad del producto supera el stock actual');
@@ -68,7 +68,7 @@ class ProductoVentaRepository extends EntityRepository
           $montoIva = $value['monto_iva'] ?? null;
           $precioUnitario = $value['precio_unitario'];
           $bonificacion = $value['bonificacion'];
-          $alicuota = !empty($value['tipo_alicuota']) ? $em->getRepository("App:TipoAliCuota")->find($value['alicuota']['tipo_alicuota_id']) : null;
+          $alicuota = !empty($value['tipo_alicuota']) ? $em->getRepository("App:TipoAliCuota")->find($value['alicuota']) : null;
           $productoVenta = new ProductoVenta($cantidad,$subtotal,$subtotalSinIva,$bonificacion,$montoBonif,$precioUnitario,$producto,$venta,$alicuota,$montoIva);
           $em->persist($productoVenta);
         }
@@ -80,7 +80,7 @@ class ProductoVentaRepository extends EntityRepository
       $em = $this->getEntityManager();
       foreach ($productos as $value) {
         $productoVenta = $em->getRepository("App:ProductoVenta")->find($value['producto_venta_id']);
-        $producto = $em->getRepository("App:Producto")->find($value['producto']['producto_id']);
+        $producto = $em->getRepository("App:Producto")->find($value['producto']);
         $producto->setStock($producto->getStock()+$productoVenta->getCantidad());
         $em->remove($productoVenta);
       }

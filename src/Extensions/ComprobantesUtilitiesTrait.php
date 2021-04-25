@@ -20,7 +20,7 @@ trait ComprobantesUtilitiesTrait
   /** Metodo que almacena los datos relacionados a la factura */
   private function registrarDatosComprobante($paramFetcher,$tipoComprobante,$afip = null){
     /** verifico si es recibo y obtengo el numero del recibo**/
-    $ptoVta = $paramFetcher->get('cliente')['negocio']['punto_vta'];
+    $ptoVta = $this->getUser()->getNegocio()->getPuntoVta();
     $tipoRecibo = ($tipoComprobante->getAfipId() == $this->getParameter('recibo'));
     if(!$tipoRecibo){
       $numeroComprobante = ($this->obtenerUltimoComprobante($afip,$ptoVta,$tipoComprobante->getAfipId()))+1;
@@ -33,7 +33,7 @@ trait ComprobantesUtilitiesTrait
     /** Venta*/
     $remito = $paramFetcher->get('remito') ?? null;
     $fechaEmision = new \Datetime($paramFetcher->get('fecha_emision'));
-    $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente')['cliente_id']);
+    $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente'));
     $tipoVenta = $this->manager()->getRepository("App:TipoVenta")->find($this->getParameter('tipo_venta_comprobante'));//Comprobante
     $paramVenta = $paramFetcher->get('venta') ?? null;
     /** sino existe la venta */
@@ -83,10 +83,15 @@ trait ComprobantesUtilitiesTrait
 /** Parametros para la generacion del PDF**/
   private function parametrosComprobantePDF($paramFetcher,$data,$tipoComprobante,$comprobante,$cae=null){
     // dd($cae);
-    $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente')['cliente_id']);
+    $cliente = $this->manager()->getRepository("App:Cliente")->find($paramFetcher->get('cliente'));
+    foreach ($paramFetcher->get('productos') as $value) {
+      $value['producto'] = $this->manager()->getRepository("App:Producto")->find($value['producto']);
+      $value['tipo_alicuota'] = $this->manager()->getRepository("App:TipoAlicuota")->find($value['tipo_alicuota']);
+      $productos[] = $value;
+    }
     $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));
     $data['cliente'] = $cliente;
-    $data['productos'] =$paramFetcher->get('productos');
+    $data['productos'] =$productos;
     $data['CbteTipo'] = $tipoComprobante;
     $data['comp'] = $comprobante;
     $data['CbteFch'] 	= new \DateTime($paramFetcher->get('fecha_emision'));

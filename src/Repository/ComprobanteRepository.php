@@ -16,9 +16,9 @@ class ComprobanteRepository extends EntityRepository
                 INNER JOIN cp.venta as v
                 INNER JOIN v.tipoVenta as tv
                 INNER JOIN v.cliente as c
-                WHERE c.negocio = :negocio AND tv.codigo= :codigo AND cp.fEmision between :fDesde AND :fHasta";
+                WHERE c.negocio = :negocio AND tc.afipId <> :comprobante AND cp.fEmision between :fDesde AND :fHasta";
         $query = $em->createQuery($dql)
-        ->setParameter(':codigo','COMPROBANTE')
+        ->setParameter(':comprobante',99)
         ->setParameter(':negocio',$negocio)
         ->setParameter(':fDesde',$fechaDesde)
         ->setParameter(':fHasta',$fechaHasta);

@@ -239,7 +239,6 @@ class AfipRestController extends RestController
         try{
            /** begin transaccion */
            $this->manager()->getConnection()->beginTransaction();
-           $ptoVta = $this->getUser()->getNegocio()->getPuntoVta();
            $tipoComprobante = $this->manager()->getRepository("App:TipoComprobante")->findOneBy(['afipId'=>$paramFetcher->get('comprobante')]);
            $comprobante = $this->registrarDatosComprobante($paramFetcher,$tipoComprobante,$afip);
            /** obtengo los datos para el comprobante */
