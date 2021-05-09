@@ -32,7 +32,7 @@ class CategoriasController extends RestController
             $response = $this->manager()->getRepository("App:Categoria")->findBy(['negocio'=>$negocio],['descripcion'=>'ASC']);
             return $this->apiResponse($response,200);
         } catch (Exception $e) {
-            return $this->apiResponse($ex->getMessage(),500);
+            return $this->apiResponse($e->getMessage(),500);
         }
     }
 

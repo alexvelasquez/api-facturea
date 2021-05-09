@@ -81,6 +81,12 @@ class Venta
      */
     private $productosVenta;
 
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="monto_debido", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $montoDebido;
 
     public function __construct($cliente,$tipoVenta,$fVenta)
     {
@@ -89,6 +95,7 @@ class Venta
         $this->fVenta = $fVenta;
         $this->fCreacion = new \DateTime();
         $this->fModificacion = new \DateTime();
+        $this->montoDebido = 0;
     }
 
     public function getVentaId(): ?int
@@ -162,6 +169,18 @@ class Venta
     public function setCliente(?Cliente $cliente): self
     {
         $this->cliente = $cliente;
+
+        return $this;
+    }
+
+    public function getMontoDebido(): ?float
+    {
+        return $this->montoDebido;
+    }
+
+    public function setMontoDebido(float $montoDebido): self
+    {
+        $this->montoDebido = $montoDebido;
 
         return $this;
     }

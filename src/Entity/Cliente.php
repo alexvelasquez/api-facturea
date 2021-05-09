@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Cliente
  *
  * @ORM\Table(name="cliente", indexes={@ORM\Index(name="negocio_id", columns={"negocio_id"}), @ORM\Index(name="tipo_documento_id", columns={"tipo_documento_id"}), @ORM\Index(name="condicion_iva_id", columns={"condicion_iva_id"}), @ORM\Index(name="localidad_id", columns={"localidad_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ClienteRepository");
  */
 class Cliente
 {
@@ -120,10 +120,9 @@ class Cliente
     private $tipoDocumento;
 
     /**
-     * One Customer has One Cart.
-     * @ORM\OneToOne(targetEntity="CuentaCorriente", mappedBy="cliente")
+     * monto debido
      */
-    private $cuentaCorriente;
+    private $montoDebido;
 
     public function __construct($razonSocial, $email, $localidad, $direccion, $telefono,$tipoDoc, $documento,$condIva, $negocio ){
         $this->razonSocial = $razonSocial;
@@ -286,9 +285,14 @@ class Cliente
 
         return $this;
     }
-    public function getCuentaCorriente(): ?CuentaCorriente
-    {
-        return $this->cuentaCorriente;
-    }
 
+    public function getMontoDebido(): self
+    {
+        return $this->montoDebido;
+    }
+    public function setMontoDebido( $montoDebido): self
+    {
+        $this->montoDebido = $montoDebido;
+        return $this;
+    }
 }

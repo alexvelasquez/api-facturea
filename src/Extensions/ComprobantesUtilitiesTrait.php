@@ -22,13 +22,10 @@ trait ComprobantesUtilitiesTrait
     /** verifico si es recibo y obtengo el numero del recibo**/
     $ptoVta = $this->getUser()->getNegocio()->getPuntoVta();
     $tipoRecibo = ($tipoComprobante->getAfipId() == $this->getParameter('recibo'));
+    $numeroComprobante = null;
     if(!$tipoRecibo){
       $numeroComprobante = ($this->obtenerUltimoComprobante($afip,$ptoVta,$tipoComprobante->getAfipId()))+1;
     }
-    else{
-      $ultimoRecibo = $this->manager()->getRepository("App:Comprobante")->findOneBy(['tipoComprobante'=>$tipoComprobante],['numero'=>'DESC']);
-      $numeroComprobante = empty($ultimoRecibo) ? 1 : ((int) $ultimoRecibo->getNumero() + 1);
-    } 
     
     /** Venta*/
     $remito = $paramFetcher->get('remito') ?? null;
@@ -50,19 +47,11 @@ trait ComprobantesUtilitiesTrait
     /** Estado Venta */
     $condicionVenta = $this->manager()->getRepository("App:CondicionVenta")->find($paramFetcher->get('condicion_vta'));
     if($tipoRecibo && ($condicionVenta->getCondicionVentaId() == $this->getParameter('condicion_cuenta_corriente'))){ //verico si es un recibo y se aplica a cuenta corriente..
+      $venta->setMontoDebido($paramFetcher->get('importes')['total']);
+      $venta->setFModificacion( new \DateTime());
       $estado = $this->manager()->getRepository("App:Estado")->findOneBy(['codigo'=>'PENDIENTEPAGO']); //obtengo el estado pendiente de pago
       $estadoVenta = new EstadoVenta($venta,$estado);
       $this->manager()->persist($estadoVenta);
-      /** agrego movimiento cuenta corriente */
-      $cuentaCorriente = $cliente->getCuentaCorriente();
-      $valor = $paramFetcher->get('importes')['total'];
-
-      $montoCuentaCorriente = $cuentaCorriente->getMonto();
-      $cuentaCorriente->setMonto($montoCuentaCorriente + (float)$valor);
-      $tipoMovimiento = $this->manager()->getRepository('App:TipoMovimiento')->findOneBy(['codigo'=>'AUMENTO']);
-      $movimiento = new Movimiento($cuentaCorriente,$valor,$tipoMovimiento);
-      $this->manager()->persist($cuentaCorriente);
-      $this->manager()->persist($movimiento);
     }
     else{
       $estado = $this->manager()->getRepository("App:Estado")->findOneBy(['codigo'=>'PAGADO']); //obtengo el estado pendiente

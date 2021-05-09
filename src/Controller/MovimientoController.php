@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\EstadoVenta;
 use App\Entity\Movimiento;
+use App\Entity\Cliente;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -20,7 +21,7 @@ class MovimientoController extends RestController
 {
      /**
      * @Rest\Post("/agregar", name="agregar_movimiento", defaults={"_format":"json"})
-     * @Rest\RequestParam(name="cuenta_corriente",nullable=false)
+     * @Rest\RequestParam(name="cliente",nullable=false)
      * @Rest\RequestParam(name="valor",nullable=false)
      * @Rest\RequestParam(name="observacion",nullable=true)
      * @SWG\Response(response=200,description="Devuelve todas los clientes de un negocio.")
@@ -31,50 +32,61 @@ class MovimientoController extends RestController
     {
         try{
             $this->manager()->getConnection()->beginTransaction();
-            $valor = $paramFetcher->get('valor');
+            $monto = $paramFetcher->get('valor');
+            $cliente = $this->manager()->getRepository('App:Cliente')->find($paramFetcher->get('cliente'));
             $observacion = $paramFetcher->get('observacion') ?? null;
-            $cuentaCorriente = $this->manager()->getRepository('App:CuentaCorriente')->find($paramFetcher->get('cuenta_corriente'));
-            $tipoMovimiento = $this->manager()->getRepository('App:TipoMovimiento')->findOneBy(['codigo'=>'DECREMENTO']);
-            $movimiento = new Movimiento($cuentaCorriente,$valor,$tipoMovimiento,$observacion);
-            $this->manager()->persist($movimiento);
-
-            $cuentaCorriente = $cuentaCorriente->abonar($valor,$movimiento);
-            
-            /** sumo el nuevo movimiento */
-            $montoAFavor = ($cuentaCorriente->getMontoFavor()+$movimiento->getValor());
-
-            $ventasPendientePago = ($this->manager()->getRepository('App:Venta')->ventasPendientePago($cuentaCorriente->getCliente()));
+            $ventasPendientePago = ($this->manager()->getRepository('App:Venta')->ventasPendientePago($cliente));
             foreach ($ventasPendientePago as $value) {
-                $estadoVenta = $value['estado_venta'];
-                $montoVenta = $value['total'];
+                $venta = $this->manager()->getRepository('App:Venta')->find($value['venta']['ventaId']);
+                $montoDebido = $venta->getMontoDebido();
                 /** verifico si el monto me alcanzan para cerrar la venta*/
-                $diferenciaPago = $montoVenta - $montoAFavor;
+                $montoDiferencial = $montoDebido - $monto;
+                $venta->setMontoDebido($montoDiferencial < 0 ? 0 : $montoDiferencial);
+                /** agrego el movimiento */
+                $movimiento = new Movimiento($venta,$monto,$observacion);
+                $this->manager()->persist($movimiento);
                 /** me alcanzo para cerrar la venta */
-                if($diferenciaPago <= 0){
-                    /** cambio la vigencia del estaado venta actual */
-                    $venta = $this->manager()->getRepository('App:Venta')->find($estadoVenta['venta']['ventaId']);
-                    $estadoVentaAnterior = $this->manager()->getRepository('App:EstadoVenta')->find($estadoVenta['estadoVentaId']);
+                if($montoDiferencial <= 0){
+                    /** cambio la vigencia del estaado venta actual por N */
+                    $estadoVentaAnterior = $this->manager()->getRepository('App:EstadoVenta')->findOneBy(['venta'=>$venta,'vigente'=>'S']);
                     $estadoVentaAnterior->setVigente('N');
                     /** creo un nuevo estado venta vigente */
                     $estadoPendienteComprobante = $this->manager()->getRepository('App:Estado')->findOneBy(['codigo'=>'PENDIENTECOMPROBANTE']);
                     $estadoVentaNuevo = new EstadoVenta($venta,$estadoPendienteComprobante);
                     $this->manager()->persist($estadoVentaNuevo);
-                    /** cambio el el valor negativo a positivo */
-                    $montoAFavor = ($diferenciaPago <= 0) ? ($diferenciaPago * (-1)) : $diferenciaPago;
                 }
                 else{
                     break;
                 }
             }
-            $cuentaCorriente->setMontoFavor($montoAFavor); 
-            $cuentaCorriente->setFModificacion(new \DateTime());
             $this->manager()->flush();
             $this->manager()->getConnection()->commit();
-            return $this->apiResponse($cuentaCorriente,200);
+            return $this->apiResponse([],200);
         } catch (Exception $e) {
             $this->manager()->getConnection()->rollback();
             return $this->apiResponse($e->getMessage(),500);
         }
     }
+
+
+     /**
+     * @Rest\Get("/cliente/{cliente}", name="movimientos_clientes", defaults={"_format":"json"})
+     * @Rest\QueryParam(name="limit",nullable=false)
+     * @SWG\Response(response=200,description="Devuelve todas los clientes de un negocio.")
+     * @SWG\Response(response=500,description="Hubo un problema para recuperar los clientes de un negocio")
+     * @SWG\Tag(name="Movimiento")
+     */
+    public function movimientos(ParamFetcher $paramFetcher, Cliente $cliente)
+    {
+        try{
+            $limit = !empty($paramFetcher->get('limit')) ? $paramFetcher->get('limit') : null;
+            $movimientos = $this->manager()->getRepository("App:Cliente")->movimientos($cliente,$limit);
+            return $this->apiResponse($movimientos,200);
+        } catch (Exception $e) {
+            $this->manager()->getConnection()->rollback();
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
+
 
 }

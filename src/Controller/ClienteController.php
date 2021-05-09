@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Cliente;
-use App\Entity\CuentaCorriente;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -35,8 +34,29 @@ class ClienteController extends RestController
         try{
             $negocio = $this->getUser()->getNegocio();
             $response = $this->manager()->getRepository("App:Cliente")->findBy(['negocio'=>$negocio,'fHasta'=> NULL],['razonSocial'=>'ASC']);
-            //$response = $this->manager()->getRepository("App:Cliente")->clientesNegocio($negocio);
-            return $this->apiResponse($response,200);
+            /** proceso los clientes para calcular el monto debito total de cada venta */
+            $clientes=[];
+            foreach ($response as $value) {
+                $monto = $this->manager()->getRepository("App:Cliente")->montoDebido($value);
+                $value->setMontoDebido($monto);
+                $clientes[]=$value;
+            }
+            return $this->apiResponse($clientes,200);
+        } catch (Exception $e) {
+            return $this->apiResponse($e->getMessage(),500);
+        }
+    }
+
+         /**
+     * @Rest\Get("cliente/{cliente}", name="cliente", defaults={"_format":"json"})
+     * @SWG\Response(response=200,description="Devuelve todas los clientes de un negocio.")
+     * @SWG\Response(response=500,description="Hubo un problema para recuperar los clientes de un negocio")
+     * @SWG\Tag(name="Cliente")
+     */
+    public function clienteNegocio(Cliente $cliente)
+    {
+        try{
+            return $this->apiResponse($cliente,200);
         } catch (Exception $e) {
             return $this->apiResponse($e->getMessage(),500);
         }
@@ -243,7 +263,11 @@ class ClienteController extends RestController
     public function cuentaCorriente(Cliente $cliente)
     {
         try{
-            $response = $this->manager()->getRepository("App:CuentaCorriente")->findOneBy(['cliente'=>$cliente],['fModificacion'=>'DESC']);
+            $montoDebido = $this->manager()->getRepository("App:Cliente")->montoDebido($cliente);
+            $ventas = $this->manager()->getRepository("App:Venta")->ventasPendientePago($cliente);
+            $response['cliente']=$cliente;
+            $response['total']=$montoDebido;
+            $response['ventas']=$ventas;
             return $this->apiResponse($response,200);
         } catch (Exception $e) {
             return $this->apiResponse($e->getMessage(),500);

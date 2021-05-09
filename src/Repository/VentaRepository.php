@@ -55,17 +55,14 @@ class VentaRepository extends EntityRepository
 
     public function ventasPendientePago($cliente){
       $em = $this->getEntityManager();
-      $dql = "SELECT ev as estado_venta,v, SUM(pv.subtotal) as total
-                FROM App:EstadoVenta as ev
-                INNER JOIN ev.venta as v
-                INNER JOIN App:ProductoVenta pv WITH pv.venta = v
-                INNER JOIN ev.estado as e
-                WHERE ev.vigente = :vigente AND
-                      v.fHasta IS NULL AND
-                      v.cliente = :cliente AND
-                      e.codigo = :codigoEstado
-                GROUP BY ev,v
-                ORDER BY total ASC";
+      $dql = "SELECT ev,v
+              FROM App:EstadoVenta as ev
+              INNER JOIN ev.venta as v
+              INNER JOIN ev.estado as e
+              WHERE ev.vigente = :vigente AND
+                    v.fHasta IS NULL AND
+                    v.cliente = :cliente AND
+                    e.codigo = :codigoEstado";
       $query = $em->createQuery($dql)
       ->setParameter(':codigoEstado','PENDIENTEPAGO')
       ->setParameter(':vigente','S')
@@ -76,12 +73,10 @@ class VentaRepository extends EntityRepository
     public function recaudacionReporte($negocio,$fechaDesde, $fechaHasta){
       $em = $this->getEntityManager();
       /** A COBRAR */
-      $dql = "SELECT SUM(pv.subtotal) as a_cobrar 
+      $dql = "SELECT SUM(v.montoDebido) as a_cobrar 
               FROM App:EstadoVenta as ev
               INNER JOIN ev.venta as v
               INNER JOIN v.cliente as c
-              INNER JOIN App:CuentaCorriente cc WITH cc.cliente = c
-              INNER JOIN App:ProductoVenta pv WITH pv.venta = v
               INNER JOIN ev.estado as e
               WHERE ev.vigente = :vigente AND
                     c.negocio = :negocio AND
@@ -101,7 +96,6 @@ class VentaRepository extends EntityRepository
       FROM App:EstadoVenta as ev
       INNER JOIN ev.venta as v
       INNER JOIN v.cliente as c
-      INNER JOIN App:CuentaCorriente cc WITH cc.cliente = c
       INNER JOIN App:ProductoVenta pv WITH pv.venta = v
       INNER JOIN ev.estado as e
       WHERE ev.vigente = :vigente AND
@@ -178,7 +172,6 @@ class VentaRepository extends EntityRepository
               FROM App:EstadoVenta as ev
               INNER JOIN ev.venta as v
               INNER JOIN v.cliente as c
-              INNER JOIN App:CuentaCorriente cc WITH cc.cliente = c
               INNER JOIN App:ProductoVenta pv WITH pv.venta = v
               INNER JOIN ev.estado as e
               WHERE ev.vigente = :vigente AND

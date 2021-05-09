@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Movimiento
  *
- * @ORM\Table(name="movimiento", indexes={@ORM\Index(name="cuenta_corriente_id", columns={"cuenta_corriente_id"}), @ORM\Index(name="tipo_movimiento_id", columns={"tipo_movimiento_id"})})
+ * @ORM\Table(name="movimiento", indexes={@ORM\Index(name="venta_id", columns={"venta_id"})})
  * @ORM\Entity(repositoryClass="App\Repository\MovimientoRepository");
  */
 class Movimiento
@@ -24,9 +24,9 @@ class Movimiento
     /**
      * @var float
      *
-     * @ORM\Column(name="valor", type="float", precision=10, scale=0, nullable=false)
+     * @ORM\Column(name="monto", type="float", precision=10, scale=0, nullable=false)
      */
-    private $valor;
+    private $monto;
 
     /**
      * @var \DateTime
@@ -43,31 +43,21 @@ class Movimiento
     private $observacion;
 
     /**
-     * @var \CuentaCorriente
+     * @var \Venta
      *
-     * @ORM\ManyToOne(targetEntity="CuentaCorriente",inversedBy="movimientos")
+     * @ORM\ManyToOne(targetEntity="Venta")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="cuenta_corriente_id", referencedColumnName="cuenta_corriente_id")
+     *   @ORM\JoinColumn(name="venta_id", referencedColumnName="venta_id")
      * })
      */
-    private $cuentaCorriente;
+    private $venta;
 
-    /**
-     * @var \TipoMovimiento
-     *
-     * @ORM\ManyToOne(targetEntity="TipoMovimiento")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="tipo_movimiento_id", referencedColumnName="tipo_movimiento_id")
-     * })
-     */
-    private $tipoMovimiento;
 
-    public function __construct($cuentaCorriente,$valor,$tipoMovimiento,$observacion=null)
+    public function __construct($venta, $monto, $observacion = null)
     {
-        $this->cuentaCorriente = $cuentaCorriente;
+        $this->venta = $venta;
         $this->fCreacion = new \DateTime();
-        $this->valor = $valor;
-        $this->tipoMovimiento = $tipoMovimiento;
+        $this->monto = $monto;
         $this->observacion = $observacion;
     }
 
@@ -76,15 +66,14 @@ class Movimiento
         return $this->movimientoId;
     }
 
-    public function getValor(): ?float
+    public function getMonto(): ?float
     {
-        return $this->valor;
+        return $this->monto;
     }
 
-    public function setValor(float $valor): self
+    public function setMonto(float $monto): self
     {
-        $this->valor = $valor;
-
+        $this->monto = $monto;
         return $this;
     }
 
@@ -96,7 +85,6 @@ class Movimiento
     public function setFCreacion(\DateTimeInterface $fCreacion): self
     {
         $this->fCreacion = $fCreacion;
-
         return $this;
     }
 
@@ -108,32 +96,17 @@ class Movimiento
     public function setObservacion(string $observacion): self
     {
         $this->observacion = $observacion;
-
         return $this;
     }
 
-    public function getCuentaCorriente(): ?CuentaCorriente
+    public function getVenta(): ?Venta
     {
-        return $this->cuentaCorriente;
+        return $this->venta;
     }
 
-    public function setCuentaCorriente(?CuentaCorriente $cuentaCorriente): self
+    public function setVenta(?Venta $venta): self
     {
-        $this->cuentaCorriente = $cuentaCorriente;
-
+        $this->venta = $venta;
         return $this;
     }
-
-    public function getTipoMovimiento(): ?TipoMovimiento
-    {
-        return $this->tipoMovimiento;
-    }
-
-    public function setTipoMovimiento(?TipoMovimiento $tipoMovimiento): self
-    {
-        $this->tipoMovimiento = $tipoMovimiento;
-
-        return $this;
-    }
-
 }
