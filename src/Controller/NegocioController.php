@@ -78,7 +78,16 @@ class NegocioController extends RestController
           $negocio = $this->getUser()->getNegocio();
           $razonSocial =$paramFetcher->get('razon_social');
           $nombreFantasia = $paramFetcher->get('nombre_fantasia');
-          $condicionIva = !empty($paramFetcher->get('condicion_iva')) ? $paramFetcher->get('condicion_iva') : null;
+          if(!empty($paramFetcher->get('condicion_iva')['condicion_iva_id'])){
+            $condicionIva = $paramFetcher->get('condicion_iva')['condicion_iva_id'];
+          }
+          elseif(!empty($paramFetcher->get('condicion_iva'))){
+            $condicionIva = $paramFetcher->get('condicion_iva');
+          }
+          else{
+            $condicionIva = null;
+          }
+          
           $cuitCuil =$paramFetcher->get('cuit_cuil');
           $inicioActividad = !empty($paramFetcher->get('inicio_actividad')) ? new \DateTime($paramFetcher->get('inicio_actividad')) : null;
           $iibb = !empty($paramFetcher->get('iibb')) ? $paramFetcher->get('iibb') : null ;

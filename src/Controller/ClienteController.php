@@ -109,8 +109,6 @@ class ClienteController extends RestController
             $this->manager()->persist($cliente);
 
             /** ALTA DE CUENTA CORRIENTE DE ESE CLIENTE */
-            $cuentaCorriente = new CuentaCorriente($cliente);
-            $this->manager()->persist($cuentaCorriente);
             $this->manager()->flush();
 
             return $this->apiResponse($cliente,201);

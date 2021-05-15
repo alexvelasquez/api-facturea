@@ -60,7 +60,7 @@ class UsuarioController extends RestController
             $user->setEmail($email);
             $user->setUsername($username);
             $this->manager()->flush();
-            return $this->apiResponse($user->getCurrent(), 200);
+            return $this->apiResponse($user, 200);
         } catch (Exception $e) {
             return $this->apiResponse($e->getMessage(), 500);
         }

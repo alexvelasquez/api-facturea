@@ -146,7 +146,7 @@ class ProductosController extends RestController
      * @SWG\Response(response=500,description="Error en el servidor")
      * @SWG\Tag(name="Producto")
      */
-    public function eliminarProducto(Producto $producto )
+    public function eliminarProducto(Producto $producto)
     {
 
         try {
@@ -162,7 +162,7 @@ class ProductosController extends RestController
     }
 
     /**
-     * @Rest\Put("/eliminarProductos", name="eliminar_producto", defaults={"_format":"json"})
+     * @Rest\Put("/eliminarProductos", name="eliminar_productos", defaults={"_format":"json"})
      * @SWG\Response(response=200,description="Actualiza el producto de un negocio.")
      * @SWG\Response(response=400,description="Error en los parametros")
      * @SWG\Response(response=500,description="Error en el servidor")

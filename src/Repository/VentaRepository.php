@@ -89,7 +89,7 @@ class VentaRepository extends EntityRepository
       ->setParameter(':fechaHasta',$fechaHasta)
       ->setParameter(':pendientePago','PENDIENTEPAGO')
       ->setParameter(':vigente','S');
-      $aCobrar = ($query->getSingleResult())['a_cobrar'];
+      $aCobrar = ($query->getSingleResult())['a_cobrar'] ?? 0;
 
       /** COBRAR */
       $dql = "SELECT SUM(pv.subtotal) as cobrado 
@@ -111,7 +111,7 @@ class VentaRepository extends EntityRepository
       ->setParameter(':pagado','PAGADO')
       ->setParameter(':vigente','S');
 
-      $cobrado = ($query->getSingleResult())['cobrado'];
+      $cobrado = ($query->getSingleResult())['cobrado'] ?? 0;
 
       return ['aCobrar'=>$aCobrar, 'cobrado'=>$cobrado];
     }
