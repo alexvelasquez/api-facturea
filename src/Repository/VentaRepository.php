@@ -53,20 +53,31 @@ class VentaRepository extends EntityRepository
       return $query->getArrayResult();
     }
 
-    public function ventasPendientePago($cliente){
-      $em = $this->getEntityManager();
-      $dql = "SELECT ev,v
-              FROM App:EstadoVenta as ev
-              INNER JOIN ev.venta as v
-              INNER JOIN ev.estado as e
-              WHERE ev.vigente = :vigente AND
-                    v.fHasta IS NULL AND
-                    v.cliente = :cliente AND
-                    e.codigo = :codigoEstado";
+    public function ventasPendientePago($cliente = null,$negocio = null){
+      $em=$this->getEntityManager();
+      $dql="SELECT ev,v
+            FROM App:EstadoVenta as ev
+            INNER JOIN ev.venta as v
+            INNER JOIN v.cliente as c
+            INNER JOIN ev.estado as e
+            WHERE ev.vigente = :vigente AND
+                  v.fHasta IS NULL AND
+                  e.codigo = :codigoEstado";
+      if($cliente){
+        $dql .= " AND c = :cliente";
+      }
+      if($negocio){
+        $dql .= " AND c.negocio = :negocio";
+      }
       $query = $em->createQuery($dql)
       ->setParameter(':codigoEstado','PENDIENTEPAGO')
-      ->setParameter(':vigente','S')
-      ->setParameter(':cliente',$cliente);
+      ->setParameter(':vigente','S');
+      if($cliente){
+        $query->setParameter(':cliente',$cliente);
+      }
+      if($negocio){
+        $query->setParameter(':negocio',$negocio);
+      }
       return $query->getArrayResult();
     }
 

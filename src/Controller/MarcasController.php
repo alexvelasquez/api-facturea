@@ -155,9 +155,9 @@ class MarcasController extends RestController
 
      /**
      * @Rest\Put("/incremento", name="incremento_marca", defaults={"_format":"json"})
-     * @Rest\RequestParam(name="marca",nullable=true)
-     * @Rest\RequestParam(name="incremento",nullable=true)
-     * @Rest\RequestParam(name="cuentaCorriente",nullable=true)
+     * @Rest\RequestParam(name="marca",nullable=false)
+     * @Rest\RequestParam(name="incremento",nullable=false)
+     * @Rest\RequestParam(name="cuentaCorriente",nullable=false)
      * @SWG\Response(response=200,description="Incrementa el porcentaje recibido a todos los productos por marca.")
      * @SWG\Response(response=500,description="Hubo un problema al incrementar los productos por marca")
      * @SWG\Tag(name="Producto")
@@ -166,10 +166,9 @@ class MarcasController extends RestController
     {
         try
         {
-            $estadoPendientePago = $this->getParameter('estado_pendiente_pago');
             $marca = $this->manager()->getRepository("App:Marca")->find($paramFetcher->get('marca'));
+            $negocio = $this->getUser()->getNegocio();
             $incremento = $paramFetcher->get('incremento');
-            $cuentaCorriente = !empty($paramFetcher->get('cuentaCorriente')) ? $paramFetcher->get('cuentaCorriente') : null;
             /** inicio transaccion */
             $this->manager()->getConnection()->beginTransaction();
             $productos = $this->manager()->getRepository("App:Producto")->findBy(['marca'=>$marca]);
@@ -179,31 +178,34 @@ class MarcasController extends RestController
                 $producto->setPrecioCompra($producto->getPrecioPublicado());
                 $producto->setAumento($incremento);
                 $producto->setFModificacion(new \DateTime());
-                $this->manager()->flush();
+                // $this->manager()->flush();
             }
 
-            if(!empty($cuentaCorriente)){
-              /** obtengo todos los productos preventa con estado pendiente de pago de la marca **/
-              $productosPreventasMarcas = $this->manager()->getRepository("App:ProductoPreventa")->productosPreventaTiposProd($marca,$estadoPendientePago);
-              /** modifico el subtotal y precio unitario**/
-              foreach ($productosPreventasMarcas as $value) {
-                  $productoPreventa = $this->manager()->getRepository("App:ProductoPreventa")->find($value['productoPreventaId']);
-                  $precioUnitario = $productoPreventa->getProducto()->getPrecioPublicado();
-                  $precioCantidad =  $precioUnitario * $productoPreventa->getCantidad();
-                  $montoBonificado =  $precioCantidad * ($productoPreventa->getMontoBonif()/100);
-                  $subtotalSinIva = $precioCantidad - $montoBonificado;
-                  $valorTipoAlicuota = !empty($productoPreventa->getTipoAliCuota()) ? ( $valor->getTipoAliCuota()->getValor() / 100 ) : 0;
-                  $montoIva = $subtotalSinIva * $valorTipoAlicuota;
-                  $subtotal = $subtotalSinIva + $montoIva;
-
-                  $productoPreventa->setSubtotal($subtotal);
-                  $productoPreventa->setPrecioUnitario($precioUnitario);
-                  $productoPreventa->setMontoIva($montoIva);
-                  $productoPreventa->setMontoBonif($montoBonificado);
-                  $productoPreventa->setSubtotalSinIva($subtotalSinIva);
-                  $this->manager()->flush();
-              }
-            }
+            $ventasPendientesDePago =  $this->manager()->getRepository("App:Venta")->ventasPendientePago(null,$negocio);
+            /** modifico el subtotal y precio unitario**/
+            foreach ($ventasPendientesDePago as $value) {
+                $venta = $this->manager()->getRepository("App:Venta")->find($value['venta']['ventaId']);
+                $productosVenta = $this->manager()->getRepository("App:ProductoVenta")->findBy(['venta'=>$venta]);
+                $total = 0;
+                foreach ($productosVenta as $pVenta) {
+                    $precioUnitario = $pVenta->getProducto()->getPrecioPublicado();
+                    $precioCantidad =  $precioUnitario * $pVenta->getCantidad();
+                    $montoBonificado =  $precioCantidad * ($pVenta->getMontoBonif()/100);
+                    $subtotalSinIva = $precioCantidad - $montoBonificado;
+                    $valorTipoAlicuota = !empty($pVenta->getTipoAliCuota()) ? ( $pVenta->getTipoAliCuota()->getValor() / 100 ) : 0;
+                    $montoIva = $subtotalSinIva * $valorTipoAlicuota;
+                    $subtotal = $subtotalSinIva + $montoIva;
+                    $total = $total + $subtotal;
+                    $pVenta->setSubtotal($subtotal);
+                    $pVenta->setPrecioUnitario($precioUnitario);
+                    $pVenta->setMontoIva($montoIva);
+                    $pVenta->setMontoBonif($montoBonificado);
+                    $pVenta->setSubtotalSinIva($subtotalSinIva);   
+                    $this->manager()->flush();
+                }
+                $total = $venta->getMontoDebido() + ($total - $venta->getMontoDebido());
+                $venta->setMontoDebido($total);
+            } 
             /** commit transaccion */
             $this->manager()->getConnection()->commit();
             return $this->apiResponse([],200);
